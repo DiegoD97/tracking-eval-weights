@@ -3,14 +3,33 @@ import copy
 from Tracking_Objects_v4 import Detection
 from estimate_weights_v10_64Nodos import EstimationWeights
 from map_annotation import Map
-from detections import dict_detections_nodes
+# from detections import dict_detections_nodes
 import numpy as np
-import sys ##
+import sys
+import json
+import os
 
 ########################################################################################################################
 # CAPTURA DE LOS ARGUMENTOS DE ENTRADA
 ########################################################################################################################
 
+print("Procesando fichero " + sys.argv[1] + " ...")
+with open(os.path.join("Resources", sys.argv[1])) as file_json:
+    data_diccionario = json.load(file_json)
+
+# Procesamiento de la secuencia
+for departamento in data_diccionario:
+    # Comprobar si esta vacio o no la lista en caso de no estarlo devuelve un True
+    if bool(data_diccionario[departamento]):
+        # Bucle para crear la secuencia
+        sequences = []
+        dict_detections_nodes = []
+        for edge_detected in data_diccionario[departamento]:
+            list_aux = edge_detected.split(" ")
+            sequences.append([list_aux[0], float(list_aux[1])])
+            dict_detections_nodes.append({'Node_init': list_aux[2],
+                                          'Node_dest': list_aux[3],
+                                          'dist': float(list_aux[4])})
 
 ########################################################################################################################
 # PARTE DEL TRACKING
@@ -19,10 +38,10 @@ import sys ##
 DET = Detection("classes.names", "YOLO_v1")
 
 # Write the sequences to evaluate the tracking
-"""
-sequences = [["Secuencia1", 0.0], ["Secuencia2", 90.0], ["Secuencia3", 90.0], ["Secuencia4", 180.0],
-             ["Secuencia5", -90.0], ["Secuencia6", 0.0], ["Secuencia7", 90.0]]
-"""
+
+# sequences = [["Secuencia1", 0.0], ["Secuencia2", 90.0], ["Secuencia3", 90.0], ["Secuencia4", 180.0],
+#             ["Secuencia5", -90.0], ["Secuencia6", 0.0], ["Secuencia7", 90.0]]
+
 
 # sequences = [["DepSur/Sec_N20N19", 0.0], ["DepSur/Sec_N19N21", 90.0], ["DepSur/Sec_N21N22", 90.0]]
 # sequences = [["DepNorte/Sec_N52N51", 0.0], ["DepNorte/Sec_N51N53", 90.0], ["DepNorte/Sec_N53N54", 90.0]]
@@ -33,7 +52,7 @@ sequences = [["Secuencia1", 0.0], ["Secuencia2", 90.0], ["Secuencia3", 90.0], ["
 sequences = [["Secuencia1", 0.0], ["Secuencia2", 90.0], ["Secuencia5", -180.0],
              ["Secuencia6", 0.0], ["Secuencia7", 90.0]]
 """
-sequences = [["Secuencia2", 0.0]]
+# sequences = [["Secuencia2", 0.0]]
 
 ########################################################################################################################
 # PARTE DE LA 'ANNOTATION'
@@ -58,7 +77,7 @@ for sequence, id_seq in zip(sequences, range(len(sequences))):
         # Object Detection Sequence
         # object_detections = MT.data_filter_objects(sequence[0]+"_Results.txt")
         object_detections = DET.final_results_clustering
-        node_detection = dict_detections_nodes[(id_seq+1)]
+        node_detection = dict_detections_nodes[id_seq]
         # Eval the weight
         EW.evaluate_location(1,
                              MAP.NODE_AN.LIST_NODES,
@@ -76,7 +95,7 @@ for sequence, id_seq in zip(sequences, range(len(sequences))):
         # Object Detection Sequence
         # object_detections = MT.data_filter_objects(sequence[0]+"_Results.txt")
         object_detections = DET.final_results_clustering
-        node_detection = dict_detections_nodes[(id_seq+1)]
+        node_detection = dict_detections_nodes[id_seq]
         # Eval the weight
         EW.evaluate_location(2,
                              MAP.NODE_AN.LIST_NODES,
@@ -94,7 +113,7 @@ for sequence, id_seq in zip(sequences, range(len(sequences))):
         # Object Detection Sequence
         # object_detections = MT.data_filter_objects(sequence[0]+"_Results.txt")
         object_detections = DET.final_results_clustering
-        node_detection = dict_detections_nodes[(id_seq+1)]
+        node_detection = dict_detections_nodes[id_seq]
         # Eval the weight
         EW.evaluate_location(3,
                              MAP.NODE_AN.LIST_NODES,
@@ -126,7 +145,7 @@ for sequence, id_seq in zip(sequences, range(len(sequences))):
         # Object Detection Sequence
         # object_detections = MT.data_filter_objects(sequence[0]+"_Results.txt")
         object_detections = DET.final_results_clustering
-        node_detection = dict_detections_nodes[(id_seq + 1)]
+        node_detection = dict_detections_nodes[id_seq]
         # Eval the weight
         EW.evaluate_location(3,
                              MAP.NODE_AN.LIST_NODES,

@@ -440,9 +440,9 @@ class Detection:
             os.makedirs(directory_results, exist_ok=True)
 
         # Open the file
-        # fid = open(directory_results+'%s_Results.txt' % sequence, 'w')
+        fid = open(directory_results+'%s_Results.txt' % sequence, 'w')
         file_sequence = sequence.split("/")
-        fid = open(directory_results + '%s_Results.txt' % file_sequence[1], 'w')
+        # fid = open(directory_results + '%s_Results.txt' % file_sequence[1], 'w')
 
         # Distance of Nodes
         fid.write("Distance nodes: %0.2f\n" % (y2 / 100))

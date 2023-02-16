@@ -1,0 +1,23 @@
+{
+  "DepNorte": [
+
+  ],
+
+  "DepSur": [
+    "Secuencia1 0.0 E T 18.2",
+    "Secuencia2 90.0 T T 7.25",
+    "Secuencia3 90.0 T E 4.1",
+    "Secuencia4 180.0 E T 4.1",
+    "Secuencia5 -90.0 T T 7.25",
+    "Secuencia6 0.0 T T 9.0",
+    "Secuencia7 90.0 T E 4.6"
+  ],
+
+  "DepEste": [
+
+  ],
+
+  "DepOeste": [
+
+  ]
+}
