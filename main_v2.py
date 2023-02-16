@@ -5,7 +5,7 @@ from estimate_weights_v10_64Nodos import EstimationWeights
 from map_annotation import Map
 from detections import dict_detections_nodes
 import numpy as np
-import sys
+import sys ##
 
 ########################################################################################################################
 # CAPTURA DE LOS ARGUMENTOS DE ENTRADA
