@@ -275,7 +275,7 @@ class Detection:
     # FUNCTION FOR REPRESENT THE RESULTS OF ESTIMATION POSE FROM OBJECTS
     #####################################################################################################
 
-    def graphics_representation(self, list_of_results):
+    def graphics_representation(self, list_of_results, name_sequence):
         # Dictionary with the colors for each class of object
         """
         dict_colors = {
@@ -293,6 +293,9 @@ class Detection:
             'fallen': "brown"
         }
         """
+        # Directory for save the images results
+        directory_results = './Results/ResultsTracking/'
+
         dict_colors = {
             'window': "c",
             'door': "magenta",
@@ -343,7 +346,8 @@ class Detection:
 
         plt.xticks(np.arange(int(-maximum_x-1), int(maximum_x+1), step=1))
         plt.yticks(np.arange(0.0, maximum_y, step=3))
-        plt.show()
+        plt.savefig(directory_results+name_sequence+'.png')
+        plt.cla()
 
     ####################################################################################################
     # FUNCTION FOR ESTIMATE THE POSE
@@ -640,12 +644,12 @@ class Detection:
             index = index + 1
 
         # PLOT THE RESULTS
-        self.graphics_representation(self.list_results)
+        self.graphics_representation(self.list_results, sequence)
 
         # CLUSTERING THE OBJECTS
         self.clustering_objects(self.list_results)
 
-        self.graphics_representation(self.final_results_clustering)
+        self.graphics_representation(self.final_results_clustering, sequence)
 
         # These sentences go out from while loop
         # Process for obtain the results from tracking
