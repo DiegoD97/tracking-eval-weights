@@ -538,7 +538,8 @@ class EstimationWeights:
             # Final Result
             # Most relevant values for W_1
             print("\n\n\nMAX VALUES FOR MATRIX W_1")
-            self.max_values_from_matrix(3, self.W_1)
+            caminos_probables = self.max_values_from_matrix(3, self.W_1)
+            # self.represent_data_discreted(caminos_probables[0])
             t1_t2 = t2 - t1
             print("\nTiempo de ejecución de la matriz W1: %f" % t1_t2)
             # Save data matrix
@@ -558,7 +559,8 @@ class EstimationWeights:
 
             # Most relevant values for W_12
             print("\n\n\nMAX VALUES FOR MATRIX W_12")
-            self.max_values_from_matrix(3, self.W_12)
+            caminos_probables = self.max_values_from_matrix(3, self.W_12)
+            # self.represent_data_discreted(caminos_probables[0])
             print("\n\nTIEMPOS DE EJECUCIÓN DEL PROGRAMA")
             t6_t2 = t6 - t2
             print("\nTiempo de ejecución de la matriz W12: %f" % t6_t2)
