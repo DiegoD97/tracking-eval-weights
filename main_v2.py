@@ -100,6 +100,8 @@ MAP = Map()
 ########################################################################################################################
 # Tracking and Evaluating for three sequences
 for value_list in lista_pruebas:
+    # Reinicio la variable list_data_representation de la clase EW
+    EW.restart_list_data_representation()
     for sequence, id_seq in zip(value_list, range(len(value_list))):
         if (id_seq+1) == 1:
             print(sequence)
