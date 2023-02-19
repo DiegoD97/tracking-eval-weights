@@ -14,11 +14,20 @@ import os
 ########################################################################################################################
 file_pruebas = open(os.path.join("Resources", "lista_pruebas.txt"))
 lista_pruebas = []
+lista_nodos_pruebas = []
 for row in file_pruebas:
     aux_list = row.split("\n")[0].split(" ")
     sequence_aux = []
+    list_nodos_aux = []
     dict_aux = {}
     for ind_arr in range(0, len(aux_list), 5):
+        # Lista de secuencia de nodos
+        if ind_arr == 0:
+            list_nodos_aux.append(int(aux_list[ind_arr][5:7]))
+            list_nodos_aux.append(int(aux_list[ind_arr][8:]))
+        else:
+            list_nodos_aux.append(int(aux_list[ind_arr][8:]))
+        # Diccionario de la deteccion de nodos
         dict_aux = {
             'Node_init': aux_list[ind_arr + 2],
             'Node_dest': aux_list[ind_arr + 3],
@@ -26,6 +35,7 @@ for row in file_pruebas:
         }
         sequence_aux.append([aux_list[ind_arr], float(aux_list[ind_arr + 1]), dict_aux])
 
+    lista_nodos_pruebas.append(list_nodos_aux)
     lista_pruebas.append(sequence_aux)
 
 ########################################################################################################################
@@ -44,6 +54,17 @@ for files_dir in os.listdir(os.path.join("Results", "ResultsTracking")):
 # Eliminación del contenido de la carpeta ResultsWeights
 for files_dir in os.listdir(os.path.join("Results", "ResultsWeights")):
     os.remove(os.path.join("Results", "ResultsWeights", files_dir))
+"""
+# Creacion de las nuevas subcarpetas
+for id_index in range(len(lista_nodos_pruebas)):
+    file_dir = "Prueba_%d" % (id_index + 1)
+    # Creacion de las subcarpetas en DiscretResults
+    os.mkdir(os.path.join("Results", "DiscretResults", file_dir))
+    # Creacion de las subcarpetas en ResultsTracking
+    os.mkdir(os.path.join("Results", "ResultsTracking", file_dir))
+    # Creacion de las subcarpetas en ResultsWeights
+    os.mkdir(os.path.join("Results", "ResultsWeights", file_dir))
+"""
 
 """
 print("Procesando fichero " + sys.argv[1] + " ...")
