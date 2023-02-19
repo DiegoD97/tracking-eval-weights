@@ -177,6 +177,9 @@ class EstimationWeights:
     def restart_list_data_representation(self):
         self.list_data_representation = []
 
+    def copia_list_data_representation(self):
+        return copy.deepcopy(self.list_data_representation)
+
     def copia_data_representation_node(self):
         return copy.deepcopy(self.data_representation_Nodos)
 
@@ -196,15 +199,16 @@ class EstimationWeights:
         list_aux = [self.copia_matriz_resultados_nodos(), self.copia_matriz_representacion_objetos()]
         self.list_data_representation.append(list_aux)
 
-    def represent_data_discreted(self, ruta_max_value, ruta_real=None):
-        for index in range(len(self.list_data_representation)):
+    @staticmethod
+    def represent_data_discreted(ruta_max_value, lista_data_representation, ruta_real=None):
+        for index in range(len(lista_data_representation)):
             # Fichero para valor maximo de ruta
             filename_max = "./Results/DiscretResults/Nodes_%d_%d.txt" % (ruta_max_value[index]+1,
                                                                          ruta_max_value[index+1]+1)
             filehandler_max = open(filename_max, 'wt')
             # Formato para los nodos
-            data_weight_node = round(self.list_data_representation[index][0][ruta_max_value[index]][ruta_max_value[index+1]]['Contribucion nodos'], 3)
-            data_gamma_node = self.list_data_representation[index][0][ruta_max_value[index]][ruta_max_value[index+1]]['gamma Nodos']
+            data_weight_node = round(lista_data_representation[index][0][ruta_max_value[index]][ruta_max_value[index+1]]['Contribucion nodos'], 3)
+            data_gamma_node = lista_data_representation[index][0][ruta_max_value[index]][ruta_max_value[index+1]]['gamma Nodos']
             format_node = "{0:<15}{1:<10}{2:<15}{3:<10}".format("Peso Nodos",
                                                                 str(data_weight_node),
                                                                 "gamma nodos",
@@ -214,7 +218,7 @@ class EstimationWeights:
 
             filehandler_max.write("\n\nCONTRIBUCION OBJETOS\n")
             # Formato para los objetos
-            for objClass in self.list_data_representation[index][1][ruta_max_value[index]][ruta_max_value[index+1]]['res objects']:
+            for objClass in lista_data_representation[index][1][ruta_max_value[index]][ruta_max_value[index+1]]['res objects']:
                 weight_obj_aux = str(round(objClass['Contribucion clase objeto'], 3))
                 format_objects = "{0:<7}{1:<12}{2:<7}{3:<10}{4:<3}{5:<80}{6:<4}{7:<80}{8:<10}{9:<10}{10:<10}{11:<10}{12}".format(
                     "Clase:",
@@ -232,8 +236,8 @@ class EstimationWeights:
                     "\n")
                 filehandler_max.write(format_objects)
 
-            nc_aux = str(self.list_data_representation[index][1][ruta_max_value[index]][ruta_max_value[index+1]]['NC'])
-            peso_total_objs = round(self.list_data_representation[index][1][ruta_max_value[index]][ruta_max_value[index+1]]['peso'], 3)
+            nc_aux = str(lista_data_representation[index][1][ruta_max_value[index]][ruta_max_value[index+1]]['NC'])
+            peso_total_objs = round(lista_data_representation[index][1][ruta_max_value[index]][ruta_max_value[index+1]]['peso'], 3)
             peso_edge = round((data_weight_node + peso_total_objs) / 2, 3)
             format_other_param_objs = "{0:<10}{1:<10}{2}{3:<20}{4:<10}{5}{6:<10}{7}".format("NC:",
                                                                                             nc_aux,
@@ -251,8 +255,8 @@ class EstimationWeights:
                 filename = "./Results/DiscretResults/Nodes_%d_%d.txt" % (ruta_real[index], ruta_real[index + 1])
                 filehandler = open(filename, 'wt')
                 # Escritura para nodos
-                data_node_weight = round(self.list_data_representation[index][0][ruta_real[index]-1][ruta_real[index + 1]-1]['Contribucion nodos'], 3)
-                data_node_gamma = self.list_data_representation[index][0][ruta_real[index] - 1][ruta_real[index + 1] - 1]['gamma Nodos']
+                data_node_weight = round(lista_data_representation[index][0][ruta_real[index]-1][ruta_real[index + 1]-1]['Contribucion nodos'], 3)
+                data_node_gamma = lista_data_representation[index][0][ruta_real[index] - 1][ruta_real[index + 1] - 1]['gamma Nodos']
                 format_node = "{0:<15}{1:<10}{2:<17}{3:<10}".format("Peso Nodos:",
                                                                     str(data_node_weight),
                                                                     "gamma nodos:",
@@ -261,7 +265,7 @@ class EstimationWeights:
                 filehandler.write(format_node)
                 # Escritura para objetos
                 filehandler.write("\n\nCONTRIBUCION OBJETOS\n")
-                for objClass in self.list_data_representation[index][1][ruta_real[index]-1][ruta_real[index + 1]-1]['res objects']:
+                for objClass in lista_data_representation[index][1][ruta_real[index]-1][ruta_real[index + 1]-1]['res objects']:
                     weight_obj_aux = str(round(objClass['Contribucion clase objeto'], 3))
                     format_objects = "{0:<7}{1:<12}{2:<7}{3:<10}{4:<3}{5:<80}{6:<4}{7:<80}{8:<10}{9:<10}{10:<10}{11:<10}{12}".format("Clase:",
                                                                                                                                    objClass['Clase objeto'],
@@ -279,8 +283,8 @@ class EstimationWeights:
 
                     filehandler.write(format_objects)
 
-                nc_aux = str(self.list_data_representation[index][1][ruta_real[index]-1][ruta_real[index + 1]-1]['NC'])
-                peso_total_objs_r = round(self.list_data_representation[index][1][ruta_real[index]-1][ruta_real[index + 1]-1]['peso'], 3)
+                nc_aux = str(lista_data_representation[index][1][ruta_real[index]-1][ruta_real[index + 1]-1]['NC'])
+                peso_total_objs_r = round(lista_data_representation[index][1][ruta_real[index]-1][ruta_real[index + 1]-1]['peso'], 3)
                 peso_edge_r = round((data_node_weight + peso_total_objs_r) / 2, 3)
                 format_other_param_objs = "{0:<10}{1:<10}{2}{3:<20}{4:<10}{5}{6:<10}{7}".format("NC:",
                                                                                             nc_aux,
@@ -293,7 +297,7 @@ class EstimationWeights:
                 filehandler.write(format_other_param_objs)
                 filehandler.close()
 
-        self.list_data_representation.pop(0)
+        lista_data_representation.pop(0)
 
     ####################################################################################################################
     # FUNCTION FOR REPRESENT THE DATA FROM MATRIX W_1, W_2, W_3, W_12, W_123
@@ -362,24 +366,24 @@ class EstimationWeights:
                                                                     direction,
                                                                     dist_nodes_edge)
                             # Comprobate if the euclidean distance from d and dt is over an umbral distance
-                            if sqrt(d ** 2 + dt ** 2) > self.umbral:
-                                pass
-                            else:
-                                # Guardar las distancias de d y dt en el data representation
-                                self.data_representation_Objects['valor d'].append(round(d, 3))
-                                self.data_representation_Objects['valor dt'].append(round(dt, 3))
-                                # Eval the weight using the distance from node reference and transversal distance
-                                result_product_partial = (result_product_partial *
-                                                          (e ** (-self.gamma1 * d)) * (e ** (-self.gamma3 * dt)))
+                            # if sqrt(d ** 2 + dt ** 2) > self.umbral:
+                            #    pass
+                            # else:
+                            # Guardar las distancias de d y dt en el data representation
+                            self.data_representation_Objects['valor d'].append(round(d, 3))
+                            self.data_representation_Objects['valor dt'].append(round(dt, 3))
+                            # Eval the weight using the distance from node reference and transversal distance
+                            result_product_partial = (result_product_partial *
+                                                      (e ** (-self.gamma1 * d)) * (e ** (-self.gamma3 * dt)))
 
-                                result_product = result_product * (e ** (-self.gamma1 * d)) * (e ** (-self.gamma3 * dt))
-                                # result_product = result_product * (e ** (-self.gamma1 * d))
-                                # Delete the value studied for next iteration
-                                copy_annotation_objects_vis['objects'][classObject_an]['d_from_ref1'].pop(P2)
-                                copy_annotation_objects_vis['objects'][classObject_an]['d_trans'].pop(P2)
-                                # Delete the value studied for next iteration
-                                copy_edge_detection[classObject_det]['d_from_ref1'].pop(P1)
-                                copy_edge_detection[classObject_det]['d_trans'].pop(P1)
+                            result_product = result_product * (e ** (-self.gamma1 * d)) * (e ** (-self.gamma3 * dt))
+                            # result_product = result_product * (e ** (-self.gamma1 * d))
+                            # Delete the value studied for next iteration
+                            copy_annotation_objects_vis['objects'][classObject_an]['d_from_ref1'].pop(P2)
+                            copy_annotation_objects_vis['objects'][classObject_an]['d_trans'].pop(P2)
+                            # Delete the value studied for next iteration
+                            copy_edge_detection[classObject_det]['d_from_ref1'].pop(P1)
+                            copy_edge_detection[classObject_det]['d_trans'].pop(P1)
 
                         # Sacar resultados
                         if num_iter != 0:
@@ -539,7 +543,7 @@ class EstimationWeights:
             # Most relevant values for W_1
             print("\n\n\nMAX VALUES FOR MATRIX W_1")
             caminos_probables = self.max_values_from_matrix(3, self.W_1)
-            # self.represent_data_discreted(caminos_probables[0])
+            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation())
             t1_t2 = t2 - t1
             print("\nTiempo de ejecución de la matriz W1: %f" % t1_t2)
             # Save data matrix
@@ -560,7 +564,7 @@ class EstimationWeights:
             # Most relevant values for W_12
             print("\n\n\nMAX VALUES FOR MATRIX W_12")
             caminos_probables = self.max_values_from_matrix(3, self.W_12)
-            # self.represent_data_discreted(caminos_probables[0])
+            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation())
             print("\n\nTIEMPOS DE EJECUCIÓN DEL PROGRAMA")
             t6_t2 = t6 - t2
             print("\nTiempo de ejecución de la matriz W12: %f" % t6_t2)
@@ -601,7 +605,9 @@ class EstimationWeights:
             position = np.where(self.W_123 == np.max(self.W_123))
             camino_max_value = [position[0][0], position[1][0], position[2][0], position[3][0]]
             """
-            self.represent_data_discreted(caminos_probables[0])
+            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation())
+            # Finalmente despues de evaluar tres edges consecutivos se reinicia la variable list_data_representation
+            self.restart_list_data_representation()
             ############################################################################################################
             print("\n\nTIEMPOS DE EJECUCIÓN DEL PROGRAMA")
             print("\nTiempo de ejecución de la matriz W123: %f" % t7_t6)
