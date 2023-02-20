@@ -122,7 +122,7 @@ MAP = Map()
 # PARTE DE LA 'DETECTION'
 ########################################################################################################################
 # Tracking and Evaluating for three sequences
-for value_list, id_sequence in zip(lista_pruebas, range(len(lista_nodos_pruebas))):
+for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_pruebas, range(len(lista_nodos_pruebas))):
     # Reinicio la variable list_data_representation de la clase EW
     EW.restart_list_data_representation()
     directory2save = "Prueba_%d" % (id_sequence + 1)
@@ -144,7 +144,8 @@ for value_list, id_sequence in zip(lista_pruebas, range(len(lista_nodos_pruebas)
                                  node_detection,
                                  object_detections,
                                  sequence[1],
-                                 path2save=directory2save)
+                                 path2save=directory2save,
+                                 lista_nodos_prueba=value_nodes_list)
 
         elif (id_seq+1) == 2:
             print(sequence)
@@ -163,7 +164,8 @@ for value_list, id_sequence in zip(lista_pruebas, range(len(lista_nodos_pruebas)
                                  node_detection,
                                  object_detections,
                                  sequence[1],
-                                 path2save=directory2save)
+                                 path2save=directory2save,
+                                 lista_nodos_prueba=value_nodes_list)
 
         elif (id_seq + 1) == 3:
             print(sequence)
@@ -182,7 +184,8 @@ for value_list, id_sequence in zip(lista_pruebas, range(len(lista_nodos_pruebas)
                                  node_detection,
                                  object_detections,
                                  sequence[1],
-                                 path2save=directory2save)
+                                 path2save=directory2save,
+                                 lista_nodos_prueba=value_nodes_list)
 
         if (id_seq + 1) > 3:
             # In case to explore more than 3 edges
@@ -215,7 +218,8 @@ for value_list, id_sequence in zip(lista_pruebas, range(len(lista_nodos_pruebas)
                                  node_detection,
                                  object_detections,
                                  sequence[1],
-                                 path2save=directory2save)
+                                 path2save=directory2save,
+                                 lista_nodos_prueba=value_nodes_list)
 
 ########################################################################################################################
 ########################################################################################################################

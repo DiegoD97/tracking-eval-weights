@@ -1,3 +1,5 @@
+import os.path
+
 from numpy import e
 import numpy as np
 import copy
@@ -145,6 +147,9 @@ class EstimationWeights:
         # Umbral distance between the objects detected and annotated that will be used in function
         # for correspondences
         self.umbral = 1.5
+
+        # Create a file for save the results from lista_pruebas.txt
+        self.lista_pruebas_txt = open(os.path.join("Results","results_lista_pruebas.txt"), "w")
 
         # Load the annotated objects from topological map
         # self.annotated_objects = topological_map
@@ -519,7 +524,7 @@ class EstimationWeights:
     ####################################################################################################################
 
     def evaluate_location(self, Num_Edges_Eval, Nodes_Annotated, Edges_Annotated, Nodes_Detect, Objects_Detect, Ang_g,
-                          path2save):
+                          path2save, lista_nodos_prueba):
         # Create a deepcopy for variable Edges_Annotated
         Copy_Edges_Annotated = copy.deepcopy(Edges_Annotated)
         # FIRST: Evaluate the weight from each Edge for actual detection
@@ -550,6 +555,12 @@ class EstimationWeights:
             print("\nTiempo de ejecución de la matriz W1: %f" % t1_t2)
             # Save data matrix
             self.represent_data_matrix("W_1", self.W_1, 0.4, path2save)
+            # Comprobar si la secuencia de lista pruebas tiene solo un edge a evaluar (2 nodos)
+            if len(lista_nodos_prueba) == 2:
+                if lista_nodos_prueba == [y+1 for y in caminos_probables[0]]:
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], "Correcto")
+                else:
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], "Incorrecto")
 
         elif Num_Edges_Eval == 2:
             # In this case is necessary evaluate the combinations for two Edges
@@ -574,6 +585,12 @@ class EstimationWeights:
             self.W_2 = copy.deepcopy(W)
             # Save data matrix
             self.represent_data_matrix("W_2", self.W_2, 0.4, path2save)
+            # Comprobar si la secuencia de lista pruebas tiene dos edge a evaluar (3 nodos)
+            if len(lista_nodos_prueba) == 3:
+                if lista_nodos_prueba == [y+1 for y in caminos_probables[0]]:
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], "Correcto")
+                else:
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], "Incorrecto")
 
         elif Num_Edges_Eval == 3:
             for n in range(self.W_12.shape[0]):
@@ -610,6 +627,12 @@ class EstimationWeights:
             self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
             # Finalmente despues de evaluar tres edges consecutivos se reinicia la variable list_data_representation
             self.restart_list_data_representation()
+            # Comprobar si la secuencia de lista pruebas tiene tres edge a evaluar (4 nodos)
+            if len(lista_nodos_prueba) == 4:
+                if lista_nodos_prueba == [y+1 for y in caminos_probables[0]]:
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], "Correcto")
+                else:
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], "Incorrecto")
             ############################################################################################################
             print("\n\nTIEMPOS DE EJECUCIÓN DEL PROGRAMA")
             print("\nTiempo de ejecución de la matriz W123: %f" % t7_t6)
@@ -771,6 +794,20 @@ class EstimationWeights:
             matrix_aux.itemset(pos_id_max, 0.0)
 
         return camino_mas_probable
+
+    ##################################################################
+    # FUNCTION FOR CREATE THE .txt WITH RESULTS OF LIST TEST SEQUENCES
+    ##################################################################
+    def resultados_de_la_lista_de_pruebas(self, way_most_probable, msg):
+        sec = ""
+        for ind in range(len(way_most_probable)):
+            if ind != (len(way_most_probable) - 1):
+                sec += "%d => " % (way_most_probable[ind] + 1)
+            else:
+                sec += "%d:  %s \n" % (way_most_probable[ind] + 1, msg)
+
+        self.lista_pruebas_txt.write(sec)
+
 ########################################################################################################################
 # END CLASS
 ########################################################################################################################
