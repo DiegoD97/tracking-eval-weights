@@ -1,5 +1,7 @@
 # from manual_tracking import ManualTrack
 import copy
+import shutil
+
 from Tracking_Objects_v4 import Detection
 from estimate_weights_v10_64Nodos import EstimationWeights
 from map_annotation import Map
@@ -45,16 +47,16 @@ for row in file_pruebas:
 # Eliminación del contenido de DiscretResults
 
 for files_dir in os.listdir(os.path.join("Results", "DiscretResults")):
-    os.remove(os.path.join("Results", "DiscretResults", files_dir))
+    shutil.rmtree(os.path.join("Results", "DiscretResults", files_dir))
 
 # Eliminación del contenido de ResultsTracking
 for files_dir in os.listdir(os.path.join("Results", "ResultsTracking")):
-    os.remove(os.path.join("Results", "ResultsTracking", files_dir))
+    shutil.rmtree(os.path.join("Results", "ResultsTracking", files_dir))
 
 # Eliminación del contenido de la carpeta ResultsWeights
 for files_dir in os.listdir(os.path.join("Results", "ResultsWeights")):
-    os.remove(os.path.join("Results", "ResultsWeights", files_dir))
-"""
+    shutil.rmtree(os.path.join("Results", "ResultsWeights", files_dir))
+
 # Creacion de las nuevas subcarpetas
 for id_index in range(len(lista_nodos_pruebas)):
     file_dir = "Prueba_%d" % (id_index + 1)
@@ -64,7 +66,7 @@ for id_index in range(len(lista_nodos_pruebas)):
     os.mkdir(os.path.join("Results", "ResultsTracking", file_dir))
     # Creacion de las subcarpetas en ResultsWeights
     os.mkdir(os.path.join("Results", "ResultsWeights", file_dir))
-"""
+
 
 """
 print("Procesando fichero " + sys.argv[1] + " ...")
@@ -120,13 +122,14 @@ MAP = Map()
 # PARTE DE LA 'DETECTION'
 ########################################################################################################################
 # Tracking and Evaluating for three sequences
-for value_list in lista_pruebas:
+for value_list, id_sequence in zip(lista_pruebas, range(len(lista_nodos_pruebas))):
     # Reinicio la variable list_data_representation de la clase EW
     EW.restart_list_data_representation()
+    directory2save = "Prueba_%d" % (id_sequence + 1)
     for sequence, id_seq in zip(value_list, range(len(value_list))):
         if (id_seq+1) == 1:
             print(sequence)
-            DET.tracking_sequence(sequence[0])
+            DET.tracking_sequence(sequence[0], path2save=directory2save)
             # Reestart some variable for next iteration
             DET.list_results = []
             DET.list_YOLO_Camera_results = []
@@ -140,11 +143,12 @@ for value_list in lista_pruebas:
                                  MAP.NODE_AN.LIST_NODES_EDGES,
                                  node_detection,
                                  object_detections,
-                                 sequence[1])
+                                 sequence[1],
+                                 path2save=directory2save)
 
         elif (id_seq+1) == 2:
             print(sequence)
-            DET.tracking_sequence(sequence[0])
+            DET.tracking_sequence(sequence[0], path2save=directory2save)
             # Reestart some variable for next iteration
             DET.list_results = []
             DET.list_YOLO_Camera_results = []
@@ -158,11 +162,12 @@ for value_list in lista_pruebas:
                                  MAP.NODE_AN.LIST_NODES_EDGES,
                                  node_detection,
                                  object_detections,
-                                 sequence[1])
+                                 sequence[1],
+                                 path2save=directory2save)
 
         elif (id_seq + 1) == 3:
             print(sequence)
-            DET.tracking_sequence(sequence[0])
+            DET.tracking_sequence(sequence[0], path2save=directory2save)
             # Reestart some variable for next iteration
             DET.list_results = []
             DET.list_YOLO_Camera_results = []
@@ -176,7 +181,8 @@ for value_list in lista_pruebas:
                                  MAP.NODE_AN.LIST_NODES_EDGES,
                                  node_detection,
                                  object_detections,
-                                 sequence[1])
+                                 sequence[1],
+                                 path2save=directory2save)
 
         if (id_seq + 1) > 3:
             # In case to explore more than 3 edges
@@ -194,7 +200,7 @@ for value_list in lista_pruebas:
                         EW.W_12[i][j][k] = EW.W_1[i][j] * EW.W_2[j][k]
 
             print(sequence)
-            DET.tracking_sequence(sequence[0])
+            DET.tracking_sequence(sequence[0], path2save=directory2save)
             # Reestart some variable for next iteration
             DET.list_results = []
             DET.list_YOLO_Camera_results = []
@@ -208,7 +214,8 @@ for value_list in lista_pruebas:
                                  MAP.NODE_AN.LIST_NODES_EDGES,
                                  node_detection,
                                  object_detections,
-                                 sequence[1])
+                                 sequence[1],
+                                 path2save=directory2save)
 
 ########################################################################################################################
 ########################################################################################################################

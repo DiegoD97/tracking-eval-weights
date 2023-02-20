@@ -275,7 +275,7 @@ class Detection:
     # FUNCTION FOR REPRESENT THE RESULTS OF ESTIMATION POSE FROM OBJECTS
     #####################################################################################################
 
-    def graphics_representation(self, list_of_results, name_sequence):
+    def graphics_representation(self, list_of_results, name_sequence, path2save):
         # Dictionary with the colors for each class of object
         """
         dict_colors = {
@@ -294,7 +294,7 @@ class Detection:
         }
         """
         # Directory for save the images results
-        directory_results = './Results/ResultsTracking/'
+        directory_results = './Results/ResultsTracking/'+path2save+'/'
 
         dict_colors = {
             'window': "c",
@@ -433,9 +433,9 @@ class Detection:
     # PRINT THE RESULTS FROM TRACKING
     ####################################################################################################################
 
-    def results_tracking(self, sequence, y2):
+    def results_tracking(self, sequence, y2, path2save):
 
-        directory_results = './Results/ResultsTracking/'
+        directory_results = './Results/ResultsTracking/'+path2save+'/'
         # First: comprobate if the directory exist or not. In case to not exist, must be created
         if os.path.exists(directory_results):
             pass
@@ -521,7 +521,7 @@ class Detection:
     # MAIN FUNCTION FOR EVALUATING A SEQUENCE OF IMAGES
     ####################################################################################################################
 
-    def tracking_sequence(self, sequence, first_image=None, last_image=None):
+    def tracking_sequence(self, sequence, first_image=None, last_image=None, path2save=None):
         """
         This function evaluate the tracking objects for a sequence of images
         :param sequence: the path where is saved the sequence of images
@@ -644,16 +644,16 @@ class Detection:
             index = index + 1
 
         # PLOT THE RESULTS
-        self.graphics_representation(self.list_results, sequence)
+        self.graphics_representation(self.list_results, sequence, path2save)
 
         # CLUSTERING THE OBJECTS
         self.clustering_objects(self.list_results)
 
-        self.graphics_representation(self.final_results_clustering, sequence)
+        self.graphics_representation(self.final_results_clustering, sequence, path2save)
 
         # These sentences go out from while loop
         # Process for obtain the results from tracking
-        self.results_tracking(sequence, hist_Delta_y)
+        self.results_tracking(sequence, hist_Delta_y, path2save)
         # Visualize images with tracked objects
         # Represent objects in the second image of each pair of consecutive frames
         # self.visualize_tracking(sequence, first_image, last_image)

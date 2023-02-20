@@ -200,11 +200,11 @@ class EstimationWeights:
         self.list_data_representation.append(list_aux)
 
     @staticmethod
-    def represent_data_discreted(ruta_max_value, lista_data_representation, ruta_real=None):
+    def represent_data_discreted(ruta_max_value, lista_data_representation, path2save, ruta_real=None):
         for index in range(len(lista_data_representation)):
             # Fichero para valor maximo de ruta
-            filename_max = "./Results/DiscretResults/Nodes_%d_%d.txt" % (ruta_max_value[index]+1,
-                                                                         ruta_max_value[index+1]+1)
+            filename_max = "./Results/DiscretResults/"+path2save+"/Nodes_%d_%d.txt" % (ruta_max_value[index]+1,
+                                                                                       ruta_max_value[index+1]+1)
             filehandler_max = open(filename_max, 'wt')
             # Formato para los nodos
             data_weight_node = round(lista_data_representation[index][0][ruta_max_value[index]][ruta_max_value[index+1]]['Contribucion nodos'], 3)
@@ -252,7 +252,8 @@ class EstimationWeights:
             ##########################################################
             # Fichero para ruta real
             if ruta_real is not None:
-                filename = "./Results/DiscretResults/Nodes_%d_%d.txt" % (ruta_real[index], ruta_real[index + 1])
+                filename = "./Results/DiscretResults/"+path2save+"/Nodes_%d_%d.txt" % (ruta_real[index],
+                                                                                       ruta_real[index + 1])
                 filehandler = open(filename, 'wt')
                 # Escritura para nodos
                 data_node_weight = round(lista_data_representation[index][0][ruta_real[index]-1][ruta_real[index + 1]-1]['Contribucion nodos'], 3)
@@ -303,8 +304,8 @@ class EstimationWeights:
     # FUNCTION FOR REPRESENT THE DATA FROM MATRIX W_1, W_2, W_3, W_12, W_123
     ####################################################################################################################
     @staticmethod
-    def represent_data_matrix(file_name, matrix2rep, min_statistic):
-        file_W_txt = open('./Results/ResultsWeights/'+file_name+".txt", 'w')
+    def represent_data_matrix(file_name, matrix2rep, min_statistic, path2save):
+        file_W_txt = open('./Results/ResultsWeights/'+path2save+'/'+file_name+".txt", 'w')
         for row in range(matrix2rep.shape[0]):
             val_max = np.max(matrix2rep[row])
             if val_max > min_statistic:
@@ -517,7 +518,8 @@ class EstimationWeights:
     # FUNCTION FOR EVAL THE LOCATION USING THE INFORMATION FROM 'n'-EDGES
     ####################################################################################################################
 
-    def evaluate_location(self, Num_Edges_Eval, Nodes_Annotated, Edges_Annotated, Nodes_Detect, Objects_Detect, Ang_g):
+    def evaluate_location(self, Num_Edges_Eval, Nodes_Annotated, Edges_Annotated, Nodes_Detect, Objects_Detect, Ang_g,
+                          path2save):
         # Create a deepcopy for variable Edges_Annotated
         Copy_Edges_Annotated = copy.deepcopy(Edges_Annotated)
         # FIRST: Evaluate the weight from each Edge for actual detection
@@ -543,11 +545,11 @@ class EstimationWeights:
             # Most relevant values for W_1
             print("\n\n\nMAX VALUES FOR MATRIX W_1")
             caminos_probables = self.max_values_from_matrix(3, self.W_1)
-            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation())
+            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
             t1_t2 = t2 - t1
             print("\nTiempo de ejecución de la matriz W1: %f" % t1_t2)
             # Save data matrix
-            self.represent_data_matrix("W_1", self.W_1, 0.4)
+            self.represent_data_matrix("W_1", self.W_1, 0.4, path2save)
 
         elif Num_Edges_Eval == 2:
             # In this case is necessary evaluate the combinations for two Edges
@@ -559,19 +561,19 @@ class EstimationWeights:
             # OJO TIEMPO 6: Tiempo de ejecucion para la matriz W12
             t6 = time.time()
             # Save the max values sequences for matrix W12
-            self.represent_data_matrix("W_12", self.W_12, 0.1)
+            self.represent_data_matrix("W_12", self.W_12, 0.1, path2save)
 
             # Most relevant values for W_12
             print("\n\n\nMAX VALUES FOR MATRIX W_12")
             caminos_probables = self.max_values_from_matrix(3, self.W_12)
-            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation())
+            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
             print("\n\nTIEMPOS DE EJECUCIÓN DEL PROGRAMA")
             t6_t2 = t6 - t2
             print("\nTiempo de ejecución de la matriz W12: %f" % t6_t2)
             # Save the matrix for second Edge
             self.W_2 = copy.deepcopy(W)
             # Save data matrix
-            self.represent_data_matrix("W_2", self.W_2, 0.4)
+            self.represent_data_matrix("W_2", self.W_2, 0.4, path2save)
 
         elif Num_Edges_Eval == 3:
             for n in range(self.W_12.shape[0]):
@@ -583,14 +585,14 @@ class EstimationWeights:
             t7 = time.time()
             t7_t6 = t7 - t2
             # Save the max values sequences for matrix W123
-            self.represent_data_matrix("W_123", self.W_123, 0.1)
+            self.represent_data_matrix("W_123", self.W_123, 0.1, path2save)
             # OJO: TIEMPO 8
             t8 = time.time()
             t8_t7 = t8 - t7
 
             # Save the matrix for third Edge
             self.W_3 = copy.deepcopy(W)
-            self.represent_data_matrix("W_3", self.W_3, 0.4)
+            self.represent_data_matrix("W_3", self.W_3, 0.4, path2save)
 
             # Most relevant values for W_123
             print("\n\n\nMAX VALUES FOR MATRIX W_123")
@@ -605,7 +607,7 @@ class EstimationWeights:
             position = np.where(self.W_123 == np.max(self.W_123))
             camino_max_value = [position[0][0], position[1][0], position[2][0], position[3][0]]
             """
-            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation())
+            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
             # Finalmente despues de evaluar tres edges consecutivos se reinicia la variable list_data_representation
             self.restart_list_data_representation()
             ############################################################################################################
