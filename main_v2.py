@@ -147,6 +147,11 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
                                  path2save=directory2save,
                                  lista_nodos_prueba=value_nodes_list)
 
+            if id_sequence == len(lista_nodos_pruebas) - 1:
+                res_pond = round(EW.sumA - EW.sumB, 3)
+                msg2print = "Pve = Sum(A) - Sum((B - 1))\n" + "Pve = " + str(res_pond)
+                EW.lista_pruebas_txt.write(msg2print)
+
         elif (id_seq+1) == 2:
             print(sequence)
             DET.tracking_sequence(sequence[0], path2save=directory2save)
@@ -167,6 +172,11 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
                                  path2save=directory2save,
                                  lista_nodos_prueba=value_nodes_list)
 
+            if id_sequence == len(lista_nodos_pruebas) - 1:
+                res_pond = round(EW.sumA - EW.sumB, 3)
+                msg2print = "Pve = Sum(A) - Sum((B - 1))\n" + "Pve = " + str(res_pond)
+                EW.lista_pruebas_txt.write(msg2print)
+
         elif (id_seq + 1) == 3:
             print(sequence)
             DET.tracking_sequence(sequence[0], path2save=directory2save)
@@ -186,6 +196,11 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
                                  sequence[1],
                                  path2save=directory2save,
                                  lista_nodos_prueba=value_nodes_list)
+
+            if id_sequence == len(lista_nodos_pruebas) - 1:
+                res_pond = round(EW.sumA - EW.sumB, 3)
+                msg2print = "Pve = Sum(A) - Sum((B - 1))\n" + "Pve = " + str(res_pond)
+                EW.lista_pruebas_txt.write(msg2print)
 
         if (id_seq + 1) > 3:
             # In case to explore more than 3 edges
@@ -220,6 +235,11 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
                                  sequence[1],
                                  path2save=directory2save,
                                  lista_nodos_prueba=value_nodes_list)
+
+            if id_sequence == len(lista_nodos_pruebas) - 1:
+                res_pond = round(EW.sumA - EW.sumB, 3)
+                msg2print = "Pve = Sum(A) - Sum((B - 1))\n" + "Pve = " + str(res_pond)
+                EW.lista_pruebas_txt.write(msg2print)
 
 ########################################################################################################################
 ########################################################################################################################

@@ -149,7 +149,25 @@ class EstimationWeights:
         self.umbral = 1.5
 
         # Create a file for save the results from lista_pruebas.txt
-        self.lista_pruebas_txt = open(os.path.join("Results","results_lista_pruebas.txt"), "w")
+        self.lista_pruebas_txt = open(os.path.join("Results", "results_lista_pruebas.txt"), "w")
+        # Write the relevant data from class
+        self.lista_pruebas_txt.write("gamma1   %.3f\n" % self.gamma1)
+        self.lista_pruebas_txt.write("gamma2   %.3f\n" % self.gamma2)
+        self.lista_pruebas_txt.write("gamma3   %.3f\n" % self.gamma3)
+        self.lista_pruebas_txt.write("\n")
+
+        labelsPathClust = "./Resources/umbral_clust.txt"
+        for class_label, val_clust in zip(self.labels, open(labelsPathClust).read().strip().split("\n")):
+            msg_aux = "u_clust  " + class_label + "  " + val_clust + "\n"
+            self.lista_pruebas_txt.write(msg_aux)
+
+        self.lista_pruebas_txt.write("\n")
+
+        # Variable for evaluation
+        self.A = 0.0
+        self.B = 0.0
+        self.sumA = 0.0
+        self.sumB = 0.0
 
         # Load the annotated objects from topological map
         # self.annotated_objects = topological_map
@@ -558,9 +576,23 @@ class EstimationWeights:
             # Comprobar si la secuencia de lista pruebas tiene solo un edge a evaluar (2 nodos)
             if len(lista_nodos_prueba) == 2:
                 if lista_nodos_prueba == [y+1 for y in caminos_probables[0]]:
-                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], "Correcto")
+                    W_max = self.W_1[caminos_probables[0][0],
+                                     caminos_probables[0][1]]
+                    W_max_2 = self.W_1[caminos_probables[1][0],
+                                       caminos_probables[1][1]]
+
+                    Value_Ponderado = round(W_max / W_max_2, 3)
+                    self.sumA += Value_Ponderado
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " C ", Value_Ponderado)
                 else:
-                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], "Incorrecto")
+                    W_max = self.W_1[caminos_probables[0][0],
+                                     caminos_probables[0][1]]
+                    W_max_2 = self.W_1[lista_nodos_prueba[0]-1,
+                                       lista_nodos_prueba[1]-1]
+
+                    Value_Ponderado = round(W_max / W_max_2, 3)
+                    self.sumB += (Value_Ponderado - 1)
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " I ", Value_Ponderado)
 
         elif Num_Edges_Eval == 2:
             # In this case is necessary evaluate the combinations for two Edges
@@ -588,9 +620,27 @@ class EstimationWeights:
             # Comprobar si la secuencia de lista pruebas tiene dos edge a evaluar (3 nodos)
             if len(lista_nodos_prueba) == 3:
                 if lista_nodos_prueba == [y+1 for y in caminos_probables[0]]:
-                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], "Correcto")
+                    W_max = self.W_12[caminos_probables[0][0],
+                                      caminos_probables[0][1],
+                                      caminos_probables[0][2]]
+                    W_max_2 = self.W_12[caminos_probables[1][0],
+                                        caminos_probables[1][1],
+                                        caminos_probables[1][2]]
+
+                    Value_Ponderado = round(W_max / W_max_2, 3)
+                    self.sumA += Value_Ponderado
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " C ", Value_Ponderado)
                 else:
-                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], "Incorrecto")
+                    W_max = self.W_12[caminos_probables[0][0],
+                                      caminos_probables[0][1],
+                                      caminos_probables[0][2]]
+                    W_max_2 = self.W_12[lista_nodos_prueba[0]-1,
+                                        lista_nodos_prueba[1]-1,
+                                        lista_nodos_prueba[2]-1]
+
+                    Value_Ponderado = round(W_max / W_max_2, 3)
+                    self.sumB += (Value_Ponderado - 1)
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " I ", Value_Ponderado)
 
         elif Num_Edges_Eval == 3:
             for n in range(self.W_12.shape[0]):
@@ -630,9 +680,31 @@ class EstimationWeights:
             # Comprobar si la secuencia de lista pruebas tiene tres edge a evaluar (4 nodos)
             if len(lista_nodos_prueba) == 4:
                 if lista_nodos_prueba == [y+1 for y in caminos_probables[0]]:
-                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], "Correcto")
+                    W_max = self.W_123[caminos_probables[0][0],
+                                       caminos_probables[0][1],
+                                       caminos_probables[0][2],
+                                       caminos_probables[0][3]]
+                    W_max_2 = self.W_123[caminos_probables[1][0],
+                                         caminos_probables[1][1],
+                                         caminos_probables[1][2],
+                                         caminos_probables[1][3]]
+
+                    Value_Ponderado = round(W_max / W_max_2, 3)
+                    self.sumA += Value_Ponderado
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " C ", Value_Ponderado)
                 else:
-                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], "Incorrecto")
+                    W_max = self.W_123[caminos_probables[0][0],
+                                       caminos_probables[0][1],
+                                       caminos_probables[0][2],
+                                       caminos_probables[0][3]]
+                    W_max_2 = self.W_123[lista_nodos_prueba[0]-1,
+                                         lista_nodos_prueba[1]-1,
+                                         lista_nodos_prueba[2]-1,
+                                         lista_nodos_prueba[3]-1]
+
+                    Value_Ponderado = round(W_max / W_max_2, 3)
+                    self.sumB += (Value_Ponderado - 1)
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " I ", Value_Ponderado)
             ############################################################################################################
             print("\n\nTIEMPOS DE EJECUCIÓN DEL PROGRAMA")
             print("\nTiempo de ejecución de la matriz W123: %f" % t7_t6)
@@ -798,15 +870,18 @@ class EstimationWeights:
     ##################################################################
     # FUNCTION FOR CREATE THE .txt WITH RESULTS OF LIST TEST SEQUENCES
     ##################################################################
-    def resultados_de_la_lista_de_pruebas(self, way_most_probable, msg):
+    def resultados_de_la_lista_de_pruebas(self, way_most_probable, msg_st, value_pond):
+        msg = str(value_pond) + msg_st
         sec = ""
         for ind in range(len(way_most_probable)):
             if ind != (len(way_most_probable) - 1):
                 sec += "%d => " % (way_most_probable[ind] + 1)
             else:
-                sec += "%d:  %s \n" % (way_most_probable[ind] + 1, msg)
+                sec += "%d\n" % (way_most_probable[ind] + 1)
 
-        self.lista_pruebas_txt.write(sec)
+        msg = msg + sec
+
+        self.lista_pruebas_txt.write(msg)
 
 ########################################################################################################################
 # END CLASS
