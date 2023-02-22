@@ -162,11 +162,11 @@ class EstimationWeights:
             self.lista_pruebas_txt.write(msg_aux)
 
         self.lista_pruebas_txt.write("\n")
-        self.lista_pruebas_txt.write("Los valores que se indican a continuacion estan en el metodo weights_nodes")
-        self.lista_pruebas_txt.write("Deteccion y Anotacion de nodos inicial y destino coindicen -> fj = 1\n")
-        self.lista_pruebas_txt.write("Deteccion y Anotacion de nodos inicial coindicen pero destino no -> fj = 0.35\n")
-        self.lista_pruebas_txt.write("Deteccion y Anotacion de nodos inicial  no coindicen pero destino si -> fj = 0.35\n")
-        self.lista_pruebas_txt.write("Deteccion y Anotacion de nodos inicial y destino no coinciden -> fj = 0.125\n\n")
+        self.lista_pruebas_txt.write("Los valores que se indican a continuacion estan en el metodo weights_nodes\n")
+        self.lista_pruebas_txt.write("N_init_an == N_init_det y N_dest_an == N_dest_det -> fj = 1\n")
+        self.lista_pruebas_txt.write("N_init_an != N_init_det y N_dest_an == N_dest_det -> fj = 0.35\n")
+        self.lista_pruebas_txt.write("N_init_an == N_init_det y N_dest_an != N_dest_det -> fj = 0.35\n")
+        self.lista_pruebas_txt.write("N_init_an != N_init_det y N_dest_an != N_dest_det -> fj = 0.125\n\n")
 
         # Variable for evaluation
         self.A = 0.0
@@ -597,7 +597,8 @@ class EstimationWeights:
 
                     Value_Ponderado = round(W_max / W_max_2, 3)
                     self.sumB += (Value_Ponderado - 1)
-                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " I ", Value_Ponderado)
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " I ", Value_Ponderado,
+                                                           lista_nodos_prueba)
 
         elif Num_Edges_Eval == 2:
             # In this case is necessary evaluate the combinations for two Edges
@@ -645,7 +646,8 @@ class EstimationWeights:
 
                     Value_Ponderado = round(W_max / W_max_2, 3)
                     self.sumB += (Value_Ponderado - 1)
-                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " I ", Value_Ponderado)
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " I ", Value_Ponderado,
+                                                           lista_nodos_prueba)
 
         elif Num_Edges_Eval == 3:
             for n in range(self.W_12.shape[0]):
@@ -709,7 +711,8 @@ class EstimationWeights:
 
                     Value_Ponderado = round(W_max / W_max_2, 3)
                     self.sumB += (Value_Ponderado - 1)
-                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " I ", Value_Ponderado)
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " I ", Value_Ponderado,
+                                                           lista_nodos_prueba)
             ############################################################################################################
             print("\n\nTIEMPOS DE EJECUCIÓN DEL PROGRAMA")
             print("\nTiempo de ejecución de la matriz W123: %f" % t7_t6)
@@ -875,16 +878,35 @@ class EstimationWeights:
     ##################################################################
     # FUNCTION FOR CREATE THE .txt WITH RESULTS OF LIST TEST SEQUENCES
     ##################################################################
-    def resultados_de_la_lista_de_pruebas(self, way_most_probable, msg_st, value_pond):
+    def resultados_de_la_lista_de_pruebas(self, way_most_probable, msg_st, value_pond, camino_real=None):
         msg = str(value_pond) + msg_st
-        sec = ""
-        for ind in range(len(way_most_probable)):
-            if ind != (len(way_most_probable) - 1):
-                sec += "%d => " % (way_most_probable[ind] + 1)
-            else:
-                sec += "%d\n" % (way_most_probable[ind] + 1)
 
-        msg = msg + sec
+        if camino_real is not None:
+            sec = ""
+            for ind in range(len(way_most_probable)):
+                if ind != (len(way_most_probable) - 1):
+                    sec += "%d => " % (way_most_probable[ind] + 1)
+                else:
+                    sec += "%d" % (way_most_probable[ind] + 1)
+
+            sec_real = ""
+            for ind in range(len(camino_real)):
+                if ind != (len(camino_real) - 1):
+                    sec_real += "%d => " % (camino_real[ind])
+                else:
+                    sec_real += "%d" % (camino_real[ind])
+
+            msg = msg + sec + " (Camino Real: " + sec_real + ")\n"
+
+        else:
+            sec = ""
+            for ind in range(len(way_most_probable)):
+                if ind != (len(way_most_probable) - 1):
+                    sec += "%d => " % (way_most_probable[ind] + 1)
+                else:
+                    sec += "%d\n" % (way_most_probable[ind] + 1)
+
+            msg = msg + sec
 
         self.lista_pruebas_txt.write(msg)
 
