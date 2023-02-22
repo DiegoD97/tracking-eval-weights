@@ -149,7 +149,7 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
 
             if id_sequence == len(lista_nodos_pruebas) - 1:
                 res_pond = round(EW.sumA - EW.sumB, 3)
-                msg2print = "Pve = Sum(A) - Sum((B - 1))\n" + "Pve = " + str(res_pond)
+                msg2print = "\nPve = Sum(A) - Sum(B - 1)\n" + "Pve = " + str(res_pond)
                 EW.lista_pruebas_txt.write(msg2print)
 
         elif (id_seq+1) == 2:
@@ -174,7 +174,7 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
 
             if id_sequence == len(lista_nodos_pruebas) - 1:
                 res_pond = round(EW.sumA - EW.sumB, 3)
-                msg2print = "Pve = Sum(A) - Sum((B - 1))\n" + "Pve = " + str(res_pond)
+                msg2print = "\nPve = Sum(A) - Sum(B - 1)\n" + "Pve = " + str(res_pond)
                 EW.lista_pruebas_txt.write(msg2print)
 
         elif (id_seq + 1) == 3:
@@ -199,7 +199,7 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
 
             if id_sequence == len(lista_nodos_pruebas) - 1:
                 res_pond = round(EW.sumA - EW.sumB, 3)
-                msg2print = "Pve = Sum(A) - Sum((B - 1))\n" + "Pve = " + str(res_pond)
+                msg2print = "\nPve = Sum(A) - Sum(B - 1)\n" + "Pve = " + str(res_pond)
                 EW.lista_pruebas_txt.write(msg2print)
 
         if (id_seq + 1) > 3:
@@ -238,7 +238,7 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
 
             if id_sequence == len(lista_nodos_pruebas) - 1:
                 res_pond = round(EW.sumA - EW.sumB, 3)
-                msg2print = "Pve = Sum(A) - Sum((B - 1))\n" + "Pve = " + str(res_pond)
+                msg2print = "\nPve = Sum(A) - Sum(B - 1)\n" + "Pve = " + str(res_pond)
                 EW.lista_pruebas_txt.write(msg2print)
 
 ########################################################################################################################

@@ -151,9 +151,9 @@ class EstimationWeights:
         # Create a file for save the results from lista_pruebas.txt
         self.lista_pruebas_txt = open(os.path.join("Results", "results_lista_pruebas.txt"), "w")
         # Write the relevant data from class
-        self.lista_pruebas_txt.write("gamma1   %.3f\n" % self.gamma1)
-        self.lista_pruebas_txt.write("gamma2   %.3f\n" % self.gamma2)
-        self.lista_pruebas_txt.write("gamma3   %.3f\n" % self.gamma3)
+        self.lista_pruebas_txt.write("gamma1 para nodos   %.3f\n" % self.gamma1)
+        self.lista_pruebas_txt.write("gamma2 para d objetos  %.3f\n" % self.gamma2)
+        self.lista_pruebas_txt.write("gamma3 para dt objetos   %.3f\n" % self.gamma3)
         self.lista_pruebas_txt.write("\n")
 
         labelsPathClust = "./Resources/umbral_clust.txt"
@@ -162,6 +162,11 @@ class EstimationWeights:
             self.lista_pruebas_txt.write(msg_aux)
 
         self.lista_pruebas_txt.write("\n")
+        self.lista_pruebas_txt.write("Los valores que se indican a continuacion estan en el metodo weights_nodes")
+        self.lista_pruebas_txt.write("Deteccion y Anotacion de nodos inicial y destino coindicen -> fj = 1\n")
+        self.lista_pruebas_txt.write("Deteccion y Anotacion de nodos inicial coindicen pero destino no -> fj = 0.35\n")
+        self.lista_pruebas_txt.write("Deteccion y Anotacion de nodos inicial  no coindicen pero destino si -> fj = 0.35\n")
+        self.lista_pruebas_txt.write("Deteccion y Anotacion de nodos inicial y destino no coinciden -> fj = 0.125\n\n")
 
         # Variable for evaluation
         self.A = 0.0
