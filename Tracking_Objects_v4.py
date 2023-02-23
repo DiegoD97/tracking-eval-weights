@@ -6,10 +6,12 @@
 import math
 import numpy as np
 import os
+import subprocess
 import copy
 import statistics
 import cv2
 import matplotlib.pyplot as plt
+import node_classification
 
 
 class Detection:
@@ -554,6 +556,54 @@ class Detection:
             file_img = path_imgs + '/ImgColor%d.png' % index             # File image with extension .png
             file_detection = path_imgs + '/ImgColor%d.txt' % index       # File of detections with extension .txt
             file_depth = path_depth + '/Img%d.txt' % index               # File with the depth info with extension .txt
+
+            # File of Detections objects (First Image) CLASIFICACION DE NODOS
+            ####################################################################################################
+            # Integration of IbPRIA22 Nodes
+            print("Node-classification (IbPRIA22)")
+            path_lidar = path_imgs.replace('imgTestResults', 'Capture_Lidar')
+            file_lidar = os.path.join(path_lidar, 'Lidar%d.npy' % index)  # File image with extension .pny
+            nbins = 50  # number of intervals of the node signature
+            dist_normalization = 12
+            vector_node = node_classification.node_classification(file_lidar, nbins, flag_signature=False)
+            # for n in range(nbins):
+            #     print("n:%d,%0.4g" %(n,vector_node[n]/dist_normalization))
+
+            # SVM Hyper-parameters
+            C = 16
+            g = 1
+            file_vector = "vector_prueba.txt"
+            fid_file_vector = open(file_vector, 'w')
+            fid_file_vector.writelines("0")
+            for n in range(nbins):
+                fid_file_vector.writelines(" %d:%0.3g" % (n, vector_node[n] / dist_normalization))
+            fid_file_vector.close()
+
+            file_model = "./Resources/nodes%d_analog_train.txt.model" % (nbins)
+            if not (os.path.exists(file_model)):
+                print("File svm-model not found: %s" % (file_model))
+
+            file_prediction = "./prueba.txt.predict"
+            if not (os.path.exists(file_prediction)):
+                fid_file_prediction = open(file_prediction, 'w')
+                fid_file_prediction.close()
+            # Para Linux
+            os.system("./Resources/libsvm-3.25/svm-predict %s %s %s" % (file_vector, file_model, file_prediction))
+            # Para windows
+            # path_svm = os.path.join("C:/Users/die_d/repositorios/tracking-eval-weights/Resources/libsvm-3.25/")
+            # os.system(path_svm + "svm-predict %s %s %s" % (file_vector, file_model, file_prediction))
+
+            nodes = ["NoNode", "EndNode", "NodeT", "CrossNode", "NodeL", "OpenNode"]
+            with open(file_prediction) as fid1:
+                line = fid1.readline()
+                label = int(line[0])
+                # print(label),print(nodes[label])
+                print("node_classification:%s\n" % nodes[label])
+
+            os.remove(file_vector)
+            os.remove(file_prediction)
+
+            ####################################################################################################
 
             # Read the coordinates of the objects from YOLO
             xc_objects, yc_objects, depth_objects = self.read_CoordYOLO(file_detection, file_depth)
