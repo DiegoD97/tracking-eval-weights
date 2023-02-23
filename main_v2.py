@@ -211,11 +211,15 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
             # Now is calculated the new matrix W_12
             # First restart the matrix W_12
             EW.W_12 = np.zeros([64, 64, 64])
+            """
             # In this case is necessary evaluate the combinations for two Edges
             for i in range(EW.W_1.shape[0]):
                 for j in range(EW.W_1.shape[1]):
                     for k in range(EW.W_1.shape[1]):
                         EW.W_12[i][j][k] = EW.W_1[i][j] * EW.W_2[j][k]
+            """
+
+            EW.W_12 = np.multiply(EW.W_1[:, :, np.newaxis], EW.W_2[np.newaxis, :])
 
             print(sequence)
             DET.tracking_sequence(sequence[0], path2save=directory2save)

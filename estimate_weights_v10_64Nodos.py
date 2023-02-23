@@ -601,11 +601,15 @@ class EstimationWeights:
                                                            lista_nodos_prueba)
 
         elif Num_Edges_Eval == 2:
+            """
             # In this case is necessary evaluate the combinations for two Edges
             for i in range(self.W_1.shape[0]):
                 for j in range(self.W_1.shape[1]):
                     for k in range(self.W_1.shape[1]):
                         self.W_12[i][j][k] = self.W_1[i][j] * W[j][k]
+            """
+
+            self.W_12 = np.multiply(self.W_1[:, :, np.newaxis], W[np.newaxis, :])
 
             # OJO TIEMPO 6: Tiempo de ejecucion para la matriz W12
             t6 = time.time()
@@ -650,16 +654,20 @@ class EstimationWeights:
                                                            lista_nodos_prueba)
 
         elif Num_Edges_Eval == 3:
+            """
             for n in range(self.W_12.shape[0]):
                 for m in range(self.W_12.shape[1]):
                     for o in range(self.W_12.shape[2]):
                         self.W_123[n][m][o][:] = self.W_12[n][m][o] * W[o][:]
+            """
+
+            self.W_123 = np.multiply(self.W_12[:, :, :, np.newaxis], W[np.newaxis, np.newaxis, np.newaxis, :])
 
             # OJO: TIEMPO 7
             t7 = time.time()
             t7_t6 = t7 - t2
             # Save the max values sequences for matrix W123
-            self.represent_data_matrix("W_123", self.W_123, 0.1, path2save)
+            self.represent_data_matrix("W_123", self.W_123[0], 0.1, path2save)
             # OJO: TIEMPO 8
             t8 = time.time()
             t8_t7 = t8 - t7
@@ -670,7 +678,7 @@ class EstimationWeights:
 
             # Most relevant values for W_123
             print("\n\n\nMAX VALUES FOR MATRIX W_123")
-            caminos_probables = self.max_values_from_matrix(3, self.W_123)
+            caminos_probables = self.max_values_from_matrix(3, self.W_123[0])
             ############################################################################################################
             # Valores discretizados a imprimir
             """
@@ -687,11 +695,13 @@ class EstimationWeights:
             # Comprobar si la secuencia de lista pruebas tiene tres edge a evaluar (4 nodos)
             if len(lista_nodos_prueba) == 4:
                 if lista_nodos_prueba == [y+1 for y in caminos_probables[0]]:
-                    W_max = self.W_123[caminos_probables[0][0],
+                    W_max = self.W_123[0,
+                                       caminos_probables[0][0],
                                        caminos_probables[0][1],
                                        caminos_probables[0][2],
                                        caminos_probables[0][3]]
-                    W_max_2 = self.W_123[caminos_probables[1][0],
+                    W_max_2 = self.W_123[0,
+                                         caminos_probables[1][0],
                                          caminos_probables[1][1],
                                          caminos_probables[1][2],
                                          caminos_probables[1][3]]
@@ -700,11 +710,13 @@ class EstimationWeights:
                     self.sumA += Value_Ponderado
                     self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " C ", Value_Ponderado)
                 else:
-                    W_max = self.W_123[caminos_probables[0][0],
+                    W_max = self.W_123[0,
+                                       caminos_probables[0][0],
                                        caminos_probables[0][1],
                                        caminos_probables[0][2],
                                        caminos_probables[0][3]]
-                    W_max_2 = self.W_123[lista_nodos_prueba[0]-1,
+                    W_max_2 = self.W_123[0,
+                                         lista_nodos_prueba[0]-1,
                                          lista_nodos_prueba[1]-1,
                                          lista_nodos_prueba[2]-1,
                                          lista_nodos_prueba[3]-1]
