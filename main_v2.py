@@ -22,7 +22,7 @@ for row in file_pruebas:
     sequence_aux = []
     list_nodos_aux = []
     dict_aux = {}
-    for ind_arr in range(0, len(aux_list), 5):
+    for ind_arr in range(0, len(aux_list), 4):
         # Lista de secuencia de nodos
         if ind_arr == 0:
             list_nodos_aux.append(int(aux_list[ind_arr][5:7]))
@@ -33,7 +33,7 @@ for row in file_pruebas:
         dict_aux = {
             'Node_init': aux_list[ind_arr + 2],
             'Node_dest': aux_list[ind_arr + 3],
-            'dist': float(aux_list[ind_arr + 4])
+            'dist': None
         }
         sequence_aux.append([aux_list[ind_arr], float(aux_list[ind_arr + 1]), dict_aux])
 
@@ -129,7 +129,9 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
     for sequence, id_seq in zip(value_list, range(len(value_list))):
         if (id_seq+1) == 1:
             print(sequence)
-            DET.tracking_sequence(sequence[0], path2save=directory2save)
+            distance_between_nodes = DET.tracking_sequence(sequence[0], path2save=directory2save)
+            # Save the distance between the nodes calculated in Tracking module
+            sequence[2]['dist'] = distance_between_nodes
             # Reestart some variable for next iteration
             DET.list_results = []
             DET.list_YOLO_Camera_results = []
@@ -154,7 +156,9 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
 
         elif (id_seq+1) == 2:
             print(sequence)
-            DET.tracking_sequence(sequence[0], path2save=directory2save)
+            distance_between_nodes = DET.tracking_sequence(sequence[0], path2save=directory2save)
+            # Save the distance between the nodes calculated in Tracking module
+            sequence[2]['dist'] = distance_between_nodes
             # Reestart some variable for next iteration
             DET.list_results = []
             DET.list_YOLO_Camera_results = []
@@ -179,7 +183,9 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
 
         elif (id_seq + 1) == 3:
             print(sequence)
-            DET.tracking_sequence(sequence[0], path2save=directory2save)
+            distance_between_nodes = DET.tracking_sequence(sequence[0], path2save=directory2save)
+            # Save the distance between the nodes calculated in Tracking module
+            sequence[2]['dist'] = distance_between_nodes
             # Reestart some variable for next iteration
             DET.list_results = []
             DET.list_YOLO_Camera_results = []
@@ -222,7 +228,9 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
             EW.W_12 = np.multiply(EW.W_1[:, :, np.newaxis], EW.W_2[np.newaxis, :])
 
             print(sequence)
-            DET.tracking_sequence(sequence[0], path2save=directory2save)
+            distance_between_nodes = DET.tracking_sequence(sequence[0], path2save=directory2save)
+            # Save the distance between the nodes calculated in Tracking module
+            sequence[2]['dist'] = distance_between_nodes
             # Reestart some variable for next iteration
             DET.list_results = []
             DET.list_YOLO_Camera_results = []
