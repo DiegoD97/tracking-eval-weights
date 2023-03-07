@@ -389,6 +389,45 @@ class Detection:
     ####################################################################################################################
     def clustering_objects(self, list_of_results):
 
+        for objectClass in self.labels:
+            List_dist_ref1 = []
+            List_dist_trans = []
+
+            for dictionary in list_of_results:
+                d_from_ref1 = dictionary[objectClass]['d_from_ref1']
+                d_trans = dictionary[objectClass]['d_trans']
+
+                if not d_from_ref1:
+                    continue
+                elif len(d_from_ref1) == 1:
+                    List_dist_ref1.append(d_from_ref1[-1])
+                    List_dist_trans.append(d_trans[-1])
+                else:
+                    List_dist_ref1.extend(d_from_ref1)
+                    List_dist_trans.extend(d_trans)
+
+            while len(List_dist_ref1) > 1:
+                distances = np.sqrt((np.subtract.outer(List_dist_ref1, List_dist_ref1) ** 2) + (
+                            np.subtract.outer(List_dist_trans, List_dist_trans) ** 2))
+
+                # Ignore diagonal elements (which are zero) and upper triangle of matrix
+                distances[np.triu_indices(len(distances))] = np.inf
+
+                min_index = np.argmin(distances)
+                min_row, min_col = np.unravel_index(min_index, distances.shape)
+
+                if distances[min_row, min_col] < self.objects_estimation[objectClass]['u_clust'] ** 2:
+                    List_dist_ref1[min_row] = 0.5 * (List_dist_ref1[min_row] + List_dist_ref1[min_col])
+                    List_dist_trans[min_row] = 0.5 * (List_dist_trans[min_row] + List_dist_trans[min_col])
+                    List_dist_ref1.pop(min_col)
+                    List_dist_trans.pop(min_col)
+                else:
+                    break
+
+            self.final_results_clustering[objectClass]['d_from_ref1'] = List_dist_ref1
+            self.final_results_clustering[objectClass]['d_trans'] = List_dist_trans
+
+        """
         # Loop for travel each object class
         for objectClass in self.labels:
             # Local variables for clustering
@@ -430,7 +469,7 @@ class Detection:
 
             self.final_results_clustering[objectClass]['d_from_ref1'] = List_dist_ref1
             self.final_results_clustering[objectClass]['d_trans'] = List_dist_trans
-
+        """
     ####################################################################################################################
     # PRINT THE RESULTS FROM TRACKING
     ####################################################################################################################
