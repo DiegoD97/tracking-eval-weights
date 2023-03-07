@@ -388,7 +388,7 @@ class Detection:
     # FUNCTION FOR PROCESS OF CLUSTERING
     ####################################################################################################################
     def clustering_objects(self, list_of_results):
-
+        """
         for objectClass in self.labels:
             List_dist_ref1 = []
             List_dist_trans = []
@@ -469,7 +469,7 @@ class Detection:
 
             self.final_results_clustering[objectClass]['d_from_ref1'] = List_dist_ref1
             self.final_results_clustering[objectClass]['d_trans'] = List_dist_trans
-        """
+
     ####################################################################################################################
     # PRINT THE RESULTS FROM TRACKING
     ####################################################################################################################
