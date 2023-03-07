@@ -54,6 +54,12 @@ class Detection:
             'depth_objects': None
         }
 
+        # Path for annotation tracking
+        self.path_annotation_tracking_d_ref = "./Resources/Annotation_Tracking/Edges_d_from_ref1/"
+        self.path_annotation_tracking_d_t = "./Resources/Annotation_Tracking/Transversal_dist/"
+
+        self.Matrix_Edges = np.loadtxt('./Resources/EvalWeights/Matrix_Edges.txt')
+
         ##########################################################################################
         # DECLARACIONES DE LOS NODOS, LOS TOPICS PUBLISHER Y SUBSCRIBER CUANDO SE INTEGRE EN ROS
         ##########################################################################################
@@ -559,10 +565,79 @@ class Detection:
             cv2.imwrite(directory_tracking_img + filename_img_represent, img)
 
     ####################################################################################################################
+    # FUNCTION FOR CREATE THE ANNOTATION FROM TRACKING
+    ####################################################################################################################
+
+    def annotation_from_tracking(self, sequence):
+
+        # Extract the nodes from sequence
+        first_node = int(sequence[5:7]) - 1
+        final_node = int(sequence[8:]) - 1
+
+        # Variable for determine the size
+        aux_tam_arr = 0
+        # Comprobate tha the max length vector
+        for obj in self.labels:
+            tam_arr = len(self.final_results_clustering[obj]['d_from_ref1'])
+            if aux_tam_arr < tam_arr:
+                aux_tam_arr = tam_arr
+            else:
+                pass
+
+        # Create a matrix with the specific dimensions
+        matrix_data_d_ref = np.zeros((len(self.labels), aux_tam_arr), dtype=float)
+        matrix_data_d_t = np.zeros((len(self.labels), aux_tam_arr), dtype=float)
+
+        # With max length, create the annotation file .txt with the results tracking
+        # First: comprobate if the directory exist or not. In case to not exist, must be created
+
+        # Directory for d_ref
+        if os.path.exists(self.path_annotation_tracking_d_ref):
+            pass
+        else:
+            # Create the directories
+            os.makedirs(self.path_annotation_tracking_d_ref, exist_ok=True)
+
+        # Directory for d_trans
+        if os.path.exists(self.path_annotation_tracking_d_t):
+            pass
+        else:
+            # Create the directories
+            os.makedirs(self.path_annotation_tracking_d_t, exist_ok=True)
+
+        # Obtain the id from Edge
+        idEdge = int(self.Matrix_Edges[first_node][final_node])
+        # Open the files txt for save the data from clustering
+        file_txt_d_ref = self.path_annotation_tracking_d_ref+"Edge_%d.txt" % idEdge
+        file_txt_d_t = self.path_annotation_tracking_d_t+"EdgeTrans_%d.txt" % idEdge
+
+        row = 0
+        # Loop for write the data to each matrix
+        for obj in self.labels:
+            if self.final_results_clustering[obj] is not None:
+                col = 0
+                for i in range(len(self.final_results_clustering[obj]['d_from_ref1'])):
+                    df = self.final_results_clustering[obj]['d_from_ref1'][i]
+                    dt = self.final_results_clustering[obj]['d_trans'][i]
+                    # Save the data to matrix
+                    matrix_data_d_ref[row][col] = df
+                    matrix_data_d_t[row][col] = dt
+
+                    col += 1
+            else:
+                pass
+
+            row += 1
+
+        # Save the txt data
+        np.savetxt(file_txt_d_ref, matrix_data_d_ref, fmt='%.2f')
+        np.savetxt(file_txt_d_t, matrix_data_d_t, fmt='%.2f')
+
+    ####################################################################################################################
     # MAIN FUNCTION FOR EVALUATING A SEQUENCE OF IMAGES
     ####################################################################################################################
 
-    def tracking_sequence(self, sequence, first_image=None, last_image=None, path2save=None):
+    def tracking_sequence(self, sequence, first_image=None, last_image=None, path2save=None, annotation=False):
         """
         This function evaluate the tracking objects for a sequence of images
         :param sequence: the path where is saved the sequence of images
@@ -575,6 +650,12 @@ class Detection:
         path_imgs = './Resources/Tracking/'+sequence+'/imgTestResults'
         path_enco = './Resources/Tracking/'+sequence+'/Encoders'
         path_depth = './Resources/Tracking/'+sequence+'/DataDepth'
+
+        """
+        path_imgs = './Resources/Tracking/' + sequence + '/ImgTestResults'
+        path_enco = './Resources/Tracking/' + sequence + '/Encoders'
+        path_depth = './Resources/Tracking/' + sequence + '/Secuencia'
+        """
 
         # Delimit the bounds for sequence
         if first_image is None and last_image is None:
@@ -747,6 +828,10 @@ class Detection:
         # Visualize images with tracked objects
         # Represent objects in the second image of each pair of consecutive frames
         # self.visualize_tracking(sequence, first_image, last_image)
+
+        # Create the annotation from tracking
+        if annotation:
+            self.annotation_from_tracking(sequence)
 
         # Here return the results from encoders for distance nodes
         # Remember that hist_Delta_y is in cm

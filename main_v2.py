@@ -129,7 +129,7 @@ for value_list, value_nodes_list, id_sequence in zip(lista_pruebas, lista_nodos_
     for sequence, id_seq in zip(value_list, range(len(value_list))):
         if (id_seq+1) == 1:
             print(sequence)
-            distance_between_nodes = DET.tracking_sequence(sequence[0], path2save=directory2save)
+            distance_between_nodes = DET.tracking_sequence(sequence[0], path2save=directory2save, annotation=True)
             # Save the distance between the nodes calculated in Tracking module
             sequence[2]['dist'] = distance_between_nodes
             # Reestart some variable for next iteration
