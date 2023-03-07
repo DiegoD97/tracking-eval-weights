@@ -527,7 +527,7 @@ class Detection:
             os.makedirs(directory_tracking_img, exist_ok=True)
 
         # Path where is located the images
-        path = './' + sequence + '/imgTestResults/ImgColor%d.png'
+        path = './' + sequence + '/ImgTestResults/ImgColor%d.png'
 
         for index in range(first_img + 1, last_img + 1):
             file_img = (path % index)
@@ -572,9 +572,9 @@ class Detection:
         :return:
         """
         # Path for detect de sequence of images, the files from encoder and file for depth
-        path_imgs = './Resources/Tracking/'+sequence+'/imgTestResults'
+        path_imgs = './Resources/Tracking/'+sequence+'/ImgTestResults'
         path_enco = './Resources/Tracking/'+sequence+'/Encoders'
-        path_depth = './Resources/Tracking/'+sequence+'/DataDepth'
+        path_depth = './Resources/Tracking/'+sequence+'/Secuencia'
 
         # Delimit the bounds for sequence
         if first_image is None and last_image is None:
