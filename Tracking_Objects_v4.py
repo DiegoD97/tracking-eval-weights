@@ -6,7 +6,6 @@
 import math
 import numpy as np
 import os
-import subprocess
 import copy
 import statistics
 import cv2
@@ -647,9 +646,9 @@ class Detection:
         :return:
         """
         # Path for detect de sequence of images, the files from encoder and file for depth
-        path_imgs = './Resources/Tracking/'+sequence+'/ImgTestResults'
+        path_imgs = './Resources/Tracking/'+sequence+'/imgTestResults'
         path_enco = './Resources/Tracking/'+sequence+'/Encoders'
-        path_depth = './Resources/Tracking/'+sequence+'/Secuencia'
+        path_depth = './Resources/Tracking/'+sequence+'/DataDepth'
 
         """
         path_imgs = './Resources/Tracking/' + sequence + '/ImgTestResults'
