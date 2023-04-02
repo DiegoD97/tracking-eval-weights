@@ -52,6 +52,21 @@ class EstimationWeights:
         self.gamma1 = 0.05
         self.gamma2 = 0.1
         self.gamma3 = 0.05
+        self.K1 = 0.35  # 0.35
+        self.K2 = 0.125 # 0.125
+        self.K3 = 0.8   # 0.8
+
+        f = open('var_satur.txt', 'r')
+        self.K2=float(f.read())
+        print('Float Value =',self.K2)
+        f.close()
+        with open('Res.txt', 'a') as f1:
+            f1.write(str(self.K2))
+            f1.write(' ')
+            f1.close()
+
+        #variable para imprimir el resultado de la ruta completa
+        self.SEC_COMPLETO = ""
 
         # This dictionary is for save the data about the objects annotated that could be visualized with the
         # camera when the wheelchair navigate in the environment
@@ -403,9 +418,9 @@ class EstimationWeights:
                             self.data_representation_Objects['valor dt'].append(round(dt, 3))
                             # Eval the weight using the distance from node reference and transversal distance
                             result_product_partial = (result_product_partial *
-                                                      (e ** (-self.gamma1 * d)) * (e ** (-self.gamma3 * dt)))
+                                                      (e ** (-self.gamma2 * d)) * (e ** (-self.gamma3 * dt)))
 
-                            result_product = result_product * (e ** (-self.gamma1 * d)) * (e ** (-self.gamma3 * dt))
+                            result_product = result_product * (e ** (-self.gamma2 * d)) * (e ** (-self.gamma3 * dt))
                             # result_product = result_product * (e ** (-self.gamma1 * d))
                             # Delete the value studied for next iteration
                             copy_annotation_objects_vis['objects'][classObject_an]['d_from_ref1'].pop(P2)
@@ -436,7 +451,7 @@ class EstimationWeights:
             self.data_representation_objects_edge['NC'] = NC
 
             # Calculate the result of products
-            result_product = result_product * (0.8 ** NC)
+            result_product = result_product * (self.K3 ** NC)
 
             # Guardar el peso final y los parciales
             self.data_representation_objects_edge['peso'] = result_product
@@ -466,14 +481,14 @@ class EstimationWeights:
                 if node_detect['Node_dest'] == node_annotation_dest['class']:
                     fj = 1
                 else:
-                    fj = 0.35
+                    fj = self.K1
             # In otherwise, where the init node not correspondence with the detection
             else:
                 # In case that the final node correspondence between the detection and annotation
                 if node_detect['Node_dest'] == node_annotation_dest['class']:
-                    fj = 0.35
+                    fj = self.K1
                 else:
-                    fj = 0.125
+                    fj = self.K2
             # Determine the distance between nodes
             if ((edge_annotated['Ref1'] == eval_node_init and edge_annotated['Ref2'] == eval_node_dest) or
                 (edge_annotated['Ref1'] == eval_node_dest and edge_annotated['Ref2'] == eval_node_init)):
@@ -492,7 +507,7 @@ class EstimationWeights:
 
             distance = abs(node_detect['dist'] - d_annotation)
 
-            result_product = fj * (e ** (-self.gamma2 * distance))
+            result_product = fj * (e ** (-self.gamma1 * distance))
 
         except TypeError:
             result_product = 0
@@ -573,11 +588,11 @@ class EstimationWeights:
             # Most relevant values for W_1
             print("\n\n\nMAX VALUES FOR MATRIX W_1")
             caminos_probables = self.max_values_from_matrix(3, self.W_1)
-            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
+#            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
             t1_t2 = t2 - t1
             print("\nTiempo de ejecución de la matriz W1: %f" % t1_t2)
             # Save data matrix
-            self.represent_data_matrix("W_1", self.W_1, 0.4, path2save)
+#            self.represent_data_matrix("W_1", self.W_1, 0.4, path2save)
             # Comprobar si la secuencia de lista pruebas tiene solo un edge a evaluar (2 nodos)
             if len(lista_nodos_prueba) == 2:
                 if lista_nodos_prueba == [y+1 for y in caminos_probables[0]]:
@@ -614,19 +629,19 @@ class EstimationWeights:
             # OJO TIEMPO 6: Tiempo de ejecucion para la matriz W12
             t6 = time.time()
             # Save the max values sequences for matrix W12
-            self.represent_data_matrix("W_12", self.W_12, 0.1, path2save)
+#            self.represent_data_matrix("W_12", self.W_12, 0.1, path2save)
 
             # Most relevant values for W_12
             print("\n\n\nMAX VALUES FOR MATRIX W_12")
             caminos_probables = self.max_values_from_matrix(3, self.W_12)
-            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
+#            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
             print("\n\nTIEMPOS DE EJECUCIÓN DEL PROGRAMA")
             t6_t2 = t6 - t2
             print("\nTiempo de ejecución de la matriz W12: %f" % t6_t2)
             # Save the matrix for second Edge
             self.W_2 = copy.deepcopy(W)
             # Save data matrix
-            self.represent_data_matrix("W_2", self.W_2, 0.4, path2save)
+#            self.represent_data_matrix("W_2", self.W_2, 0.4, path2save)
             # Comprobar si la secuencia de lista pruebas tiene dos edge a evaluar (3 nodos)
             if len(lista_nodos_prueba) == 3:
                 if lista_nodos_prueba == [y+1 for y in caminos_probables[0]]:
@@ -667,14 +682,14 @@ class EstimationWeights:
             t7 = time.time()
             t7_t6 = t7 - t2
             # Save the max values sequences for matrix W123
-            self.represent_data_matrix("W_123", self.W_123[0], 0.1, path2save)
+#            self.represent_data_matrix("W_123", self.W_123[0], 0.1, path2save)
             # OJO: TIEMPO 8
             t8 = time.time()
             t8_t7 = t8 - t7
 
             # Save the matrix for third Edge
             self.W_3 = copy.deepcopy(W)
-            self.represent_data_matrix("W_3", self.W_3, 0.4, path2save)
+#            self.represent_data_matrix("W_3", self.W_3, 0.4, path2save)
 
             # Most relevant values for W_123
             print("\n\n\nMAX VALUES FOR MATRIX W_123")
@@ -689,7 +704,7 @@ class EstimationWeights:
             position = np.where(self.W_123 == np.max(self.W_123))
             camino_max_value = [position[0][0], position[1][0], position[2][0], position[3][0]]
             """
-            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
+#            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
             # Finalmente despues de evaluar tres edges consecutivos se reinicia la variable list_data_representation
             self.restart_list_data_representation()
             # Comprobar si la secuencia de lista pruebas tiene tres edge a evaluar (4 nodos)
@@ -858,8 +873,8 @@ class EstimationWeights:
     ###################################################
     # FUNCTION FOR DETERMINE THE MAX VALUES FROM MATRIX
     ###################################################
-    @staticmethod
-    def max_values_from_matrix(num_values, matrix_data):
+    # @staticmethod
+    def max_values_from_matrix(self, num_values, matrix_data):
         # Create a deepcopy
         matrix_aux = copy.deepcopy(matrix_data)
         camino_mas_probable = []
@@ -880,7 +895,37 @@ class EstimationWeights:
                     sec += "%d " % (pos_id_max[q] + 1)
 
             print("\n\nEl recorrido más probable es:")
+            if (n==0): # Para el primer maximo
+                self.SEC_COMPLETO=self.SEC_COMPLETO+ "\n" +sec
+                print(self.SEC_COMPLETO)
+                ####################
+                ####################
+                with open('Res.txt', 'a') as f:
+                    f.write(sec)
+                    f.write(' ')
+                    f.write(str(np.max(matrix_aux)))
+                    f.write(' ')
+                    #f.write('\n')
+                    f.close()
+
+                ####################
+                ####################
+
             print(sec)
+
+
+                ####################
+                ####################
+            if (n==1):# Para el segundo maximo
+                with open('Res.txt', 'a') as f:
+                    f.write(str(np.max(matrix_aux)))
+                    f.write('\n')
+                    f.close()
+
+                ####################
+                ####################
+            print(sec)
+
             print("Con un peso de W = %.4f" % np.max(matrix_aux))
             pos_id_max = tuple(pos_id_max)
             matrix_aux.itemset(pos_id_max, 0.0)

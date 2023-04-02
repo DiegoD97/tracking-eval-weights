@@ -11,7 +11,9 @@ class Map(object):
         self.EDGE_AN = Edge()
         self.NODE_AN = Nodes()
         self.NODE_AN.read_nodes_txt('P_edge.txt')
-        self.NODE_AN.create_nodes_edge()
+        # This section is for refresh the data with tracking_results_annotation
+
+#        self.NODE_AN.create_nodes_edge()
         self.EDGE_AN.read_objects_edge_txt()
         # Complete the key 'objects' from variable LIST_NODES_EDGES from class 'Nodes'
         index = 0
@@ -60,8 +62,14 @@ class Edge(object):
             index_object = 0
             for Obj in self.class_object:
                 obj_dist_ref1 = file_d_from_ref[index_object]
-                for j in range(len(obj_dist_ref1)):
-                    if obj_dist_ref1[j] != 0:
+                try:
+                    tam_ref1 = len(obj_dist_ref1)
+                except:
+                    tam_ref1 = 1
+                    obj_dist_ref1 = [obj_dist_ref1]
+
+                for j in range(tam_ref1):
+                    if not np.isnan(obj_dist_ref1[j]):
                         self.LIST_OBJECTS_EDGES[int(index_list[-1])-1][Obj]['d_from_ref1'].append(abs(obj_dist_ref1[j]))
                 # Increment the index for next iteration
                 index_object = index_object + 1
@@ -76,8 +84,14 @@ class Edge(object):
             index_object = 0
             for Obj in self.class_object:
                 obj_dist_trans = file_d_trans[index_object]
-                for j in range(len(obj_dist_trans)):
-                    if obj_dist_trans[j] != 0:
+                try:
+                    tam_trans = len(obj_dist_trans)
+                except:
+                    tam_trans = 1
+                    obj_dist_trans = [obj_dist_trans]
+
+                for j in range(tam_trans):
+                    if not np.isnan(obj_dist_trans[j]):
                         # Save the dictionary
                         self.LIST_OBJECTS_EDGES[int(index_list[-1])-1][Obj]['d_trans'].append(obj_dist_trans[j])
                 # Increment the index for next iteration
@@ -180,9 +194,17 @@ class Nodes(object):
                 self.init_node.append(int(data_split[0]))
                 self.dest_node.append(int(data_split[1]))
                 self.dist.append(float(data_split[2].split('\n')[0]))
+
+
+                numero=int(self.Matrix_Edges[self.init_node[-1]-1][self.dest_node[-1]-1])
+                self.LIST_NODES_EDGES[numero - 1]= {'Ref1': self.init_node[-1],
+                                                    'Ref2': self.dest_node[-1],
+                                                    'dist': self.dist[-1],
+                                                    'objects': None}
+
             except ValueError:
                 pass
-
+    """
     def create_nodes_edge(self):
         # FIRST STEP: loop for save the data
         for i in range(self.Matrix_Edges.shape[0]):
@@ -196,12 +218,13 @@ class Nodes(object):
                         elif (i+1) == self.dest_node[k] and (j+1) == self.init_node[k]:
                             break
                         index = index + 1
+
                     # Possible connection
                     self.LIST_NODES_EDGES[int(self.Matrix_Edges[i][j])-1] = {'Ref1': i + 1,
                                                                              'Ref2': j + 1,
                                                                              'dist': self.dist[index],
                                                                              'objects': None}
-
+    """
 ########################################################################################################################
 # END CLASS
 ########################################################################################################################

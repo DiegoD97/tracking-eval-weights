@@ -84,15 +84,16 @@ class Detection:
     def filter_data_depth_before_median(array_depth):
         array_depth_aux = []
         for value in array_depth[0]:
-            if value < 1.0 or value > 10.0:
-                pass
-            else:
+            if 1.0 < value < 10.0:
                 array_depth_aux.append(value)
+            else:
+                pass     
 
         # With the array results after to be filtered, now is necessary comprobate
         # the dimensions between array_depth_aux (results after to be filtered) and
         # array_depth (the original array) and if the error between dimension's
         # array is more 20 %, return a cero array for be deleted more later
+
         error_dimensions = abs(len(array_depth[0]) - len(array_depth_aux)) / len(array_depth[0])
         if error_dimensions > 0.2:
             # The array is empty so return a cero array
@@ -167,15 +168,15 @@ class Detection:
                 pass
             else:
                 # Centroid of objects
-                xc = int(float(line[2]) + 0.5 * (float(line[4]) - float(line[2])))
-                yc = int(float(line[3]) + 0.5 * (float(line[5]) - float(line[3])))
+                xc = int(float(line[2]) + 0.5 * (float(line[3]) - float(line[2])))
+                yc = int(float(line[4]) + 0.5 * (float(line[5]) - float(line[4])))
 
                 # In case to have the depth of the object is considerate
                 if YOLO_depth is not None:
                     depth = True
                     xb1 = int(float(line[2]))
-                    xb2 = int(float(line[4]))
-                    yb1 = int(float(line[3]))
+                    xb2 = int(float(line[3]))
+                    yb1 = int(float(line[4]))
                     yb2 = int(float(line[5]))
                     # Obtain the measures of depth from bounding box
                     bounding_depth = matrix_depth[yb1:yb2, xb1:xb2]
@@ -353,7 +354,7 @@ class Detection:
 
         plt.xticks(np.arange(int(-maximum_x-1), int(maximum_x+1), step=1))
         plt.yticks(np.arange(0.0, maximum_y, step=3))
-        plt.savefig(directory_results+name_sequence+'.png')
+#        plt.savefig(directory_results+name_sequence+'.png')
         plt.cla()
 
     ####################################################################################################
@@ -490,12 +491,12 @@ class Detection:
             os.makedirs(directory_results, exist_ok=True)
 
         # Open the file
-        fid = open(directory_results+'%s_Results.txt' % sequence, 'w')
+#        fid = open(directory_results+'%s_Results.txt' % sequence, 'w')
         file_sequence = sequence.split("/")
         # fid = open(directory_results + '%s_Results.txt' % file_sequence[1], 'w')
 
         # Distance of Nodes
-        fid.write("Distance nodes: %0.2f\n" % (y2 / 100))
+#        fid.write("Distance nodes: %0.2f\n" % (y2 / 100))
 
         for n in self.labels:
             print('----------------------------------------------------')
@@ -512,10 +513,10 @@ class Detection:
                     print("estimation_obj_dist_ref_node: %0.4f (meters)" % df)
                     print("estimation_transversal_distance: %0.4f (meters)" % dt)
                     print('-------------------------------------------')
-                    fid.write("Class: %s , Distance (meters): %0.2f , Transversal(m): %0.2f\n" % (n, df, dt))
+ #                   fid.write("Class: %s , Distance (meters): %0.2f , Transversal(m): %0.2f\n" % (n, df, dt))
 
         # Close the file when finnish the writing task
-        fid.close()
+  #      fid.close()
 
     ####################################################################################################################
     # FUNCTION FOR VISUALIZE IN THE IMAGES THE PROCESS OF TRACKING OBJECTS
@@ -570,8 +571,11 @@ class Detection:
     def annotation_from_tracking(self, sequence):
 
         # Extract the nodes from sequence
-        first_node = int(sequence[5:7]) - 1
-        final_node = int(sequence[8:]) - 1
+        nodes_res_split = sequence.split("N")
+
+        
+        first_node = int(nodes_res_split[1]) - 1
+        final_node = int(nodes_res_split[2]) - 1
 
         # Variable for determine the size
         aux_tam_arr = 0
@@ -584,8 +588,8 @@ class Detection:
                 pass
 
         # Create a matrix with the specific dimensions
-        matrix_data_d_ref = np.zeros((len(self.labels), aux_tam_arr), dtype=float)
-        matrix_data_d_t = np.zeros((len(self.labels), aux_tam_arr), dtype=float)
+        matrix_data_d_ref = np.full((len(self.labels), aux_tam_arr), np.nan)
+        matrix_data_d_t = np.full((len(self.labels), aux_tam_arr), np.nan)
 
         # With max length, create the annotation file .txt with the results tracking
         # First: comprobate if the directory exist or not. In case to not exist, must be created
@@ -646,15 +650,15 @@ class Detection:
         :return:
         """
         # Path for detect de sequence of images, the files from encoder and file for depth
-        path_imgs = './Resources/Tracking/'+sequence+'/imgTestResults'
-        path_enco = './Resources/Tracking/'+sequence+'/Encoders'
-        path_depth = './Resources/Tracking/'+sequence+'/DataDepth'
-
         """
         path_imgs = './Resources/Tracking/' + sequence + '/ImgTestResults'
         path_enco = './Resources/Tracking/' + sequence + '/Encoders'
         path_depth = './Resources/Tracking/' + sequence + '/Secuencia'
-        """
+"""
+        path_imgs = './Resources/' + sequence + '/ImgTestResults'
+        path_enco = './Resources/' + sequence + '/Encoders'
+        path_depth = './Resources/' + sequence + '/Secuencia'
+        
 
         # Delimit the bounds for sequence
         if first_image is None and last_image is None:
@@ -680,7 +684,7 @@ class Detection:
             ####################################################################################################
             # Integration of IbPRIA22 Nodes
             print("Node-classification (IbPRIA22)")
-            path_lidar = path_imgs.replace('imgTestResults', 'Capture_Lidar')
+            path_lidar = path_imgs.replace('ImgTestResults', 'Capture_Lidar')
             file_lidar = os.path.join(path_lidar, 'Lidar%d.npy' % index)  # File image with extension .pny
             nbins = 50  # number of intervals of the node signature
             dist_normalization = 12
@@ -707,18 +711,18 @@ class Detection:
                 fid_file_prediction = open(file_prediction, 'w')
                 fid_file_prediction.close()
             # Para Linux
-            # os.system("./Resources/libsvm-3.25/svm-predict %s %s %s" % (file_vector, file_model, file_prediction))
+            os.system("./Resources/libsvm-3.25/svm-predict %s %s %s" % (file_vector, file_model, file_prediction))
             # Para windows
             # path_svm = os.path.join("C:/Users/die_d/repositorios/tracking-eval-weights/Resources/libsvm-3.25/")
             # os.system(path_svm + "svm-predict %s %s %s" % (file_vector, file_model, file_prediction))
 
             nodes = ["NoNode", "EndNode", "NodeT", "CrossNode", "NodeL", "OpenNode"]
 
-            # with open(file_prediction) as fid1:
-            #    line = fid1.readline()
-            #    label = int(line[0])
-            #    print(label),print(nodes[label])
-            #    print("node_classification:%s\n" % nodes[label])
+            with open(file_prediction) as fid1:
+                line = fid1.readline()
+                label = int(line[0])
+                print(label),print(nodes[label])
+                print("node_classification:%s\n" % nodes[label])
 
             os.remove(file_vector)
             os.remove(file_prediction)
