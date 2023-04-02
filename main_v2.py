@@ -17,6 +17,7 @@ import os
 file_pruebas = open(os.path.join("Resources", "lista_pruebas.txt"))
 lista_pruebas = []
 lista_nodos_pruebas = []
+
 for row in file_pruebas:
     aux_list = row.split("\n")[0].split(" ")
     sequence_aux = []
