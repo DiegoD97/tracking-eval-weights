@@ -123,6 +123,7 @@ class EstimationWeights:
         self.W_3 = np.zeros([64, 64])
         self.W_12 = np.zeros([64, 64, 64])
         self.W_123 = np.zeros([64, 64, 64, 64])
+        self.W_1234=np.zeros([64, 64, 64, 64, 64])
 
         # Create the object for save the results from eval
         self.ResEval = ResultsEvaluation()
@@ -368,7 +369,33 @@ class EstimationWeights:
                 file_W_txt.write(result)
             else:
                 pass
-
+    
+    ####################################################################################################################
+    # FUNCTION FOR REPRESENTING THE DATA FROM MATRIX W_1,W_12, W_123 (Experiments)
+    ####################################################################################################################
+    @staticmethod
+    def represent_data_matrix_v2(file_name, matrix2rep, path2save, it):
+        path_file = './Results/ResultsWeights2/'+path2save+'/'+file_name+".txt"
+        if not os.path.exists(path_file):
+            file_W_txt = open(path_file, 'a')
+            file_W_txt.write('Iteration Value_route Maximun_value\n')
+        else:
+            file_W_txt = open(path_file, 'a')    
+    
+        file_W_txt = open('./Results/ResultsWeights2/'+path2save+'/'+file_name+".txt", 'a')
+        _val_max = 0
+        for row in range(matrix2rep.shape[0]):
+            val_max_row = np.max(matrix2rep[row])
+            if val_max_row > _val_max:
+                val_max = val_max_row
+                position = np.where(matrix2rep[row] == val_max) 
+        result = "iteration %d:" % it + "(%d, %d)" % (row + 1, position[0] + 1) + " = " + str(round(val_max, 3)) + "\n"
+        # Write in the file
+        file_W_txt.write(result)       
+                                           
+        file_W_txt.close()
+    
+    
     ####################################################################################################################
     # FUNCTION FOR EVALUATE THE WEIGHT (CORRESPONDENCE BETWEEN DETECTION AND ANNOTATION) FROM OBJECTS DETECTED
     ####################################################################################################################
@@ -556,13 +583,237 @@ class EstimationWeights:
                     self.Matrix_ResNodes[i - 1][j - 1] = self.copia_data_representation_node()
 
         return self.Matrix_Weights
+    ###################################################
+    # FUNCTION FOR PRINTING THE RESULTS FROM MATRIX
+    ###################################################
+    @staticmethod
+    def results_matrix(self, ind_seq,path2save,lista_nodos_prueba):
+        #############################################################################
+        #Creation of files W1.txt, W12.txt and W123.txt
+        #############################################################################
+        ind_seq+=1
+        print(lista_nodos_prueba)
+        c=input('Lista nodos')
+        path_file_W1='./Results/ResultsWeights2/'+path2save+'/'+'W1'+".txt"
+        if not os.path.exists(path_file_W1):
+            file_W1= open(path_file_W1, 'a')
+            file_W1.write('Iteration: (nodes):Value_matrix_seq_real, (nodes):Maximum_Value_Matrix, (nodes): Maximum_second_value\n')
+        else:
+            file_W1 = open(path_file_W1, 'a')  
+            
+        path_file_W12='./Results/ResultsWeights2/'+path2save+'/'+'W12'+".txt"
+        if not os.path.exists(path_file_W12):
+            file_W12= open(path_file_W12, 'a')
+            file_W12.write('Iteration: (nodes):Value_matrix_seq_real, (nodes):Maximum_Value_Matrix, (nodes): Maximum_second_value\n')
+        else:
+            file_W12 = open(path_file_W12, 'a') 
+        
+               
+        path_file_W123='./Results/ResultsWeights2/'+path2save+'/'+'W123'+".txt"
+        if not os.path.exists(path_file_W123):
+            file_W123= open(path_file_W123, 'a')
+            file_W123.write('Iteration: (nodes):Value_matrix_seq_real, (nodes):Maximum_Value_Matrix, (nodes): Maximum_second_value\n')
+        else:
+            file_W123 = open(path_file_W123, 'a')       
+        ###############################################################################
+        if ind_seq==1:
+            W_1=copy.deepcopy(self.W_1)
+        elif ind_seq==2:
+            W_1=copy.deepcopy(self.W_2)
+        elif ind_seq>=3:
+       	    W_1=copy.deepcopy(self.W_3)
+        if ind_seq==2:
+            W_12=copy.deepcopy(self.W_12)
+        elif ind_seq>=3:
+            W_12 = np.multiply(self.W_2[:, :, np.newaxis], self.W_3[np.newaxis, :])
+        W_123=copy.deepcopy(self.W_123)
+        
+        ####################################### Matrix W1###############################################################################################
+        #Find the maximum value of W1
+        W_1_max=np.max(W_1)
+        W_1_pos_real=W_1[lista_nodos_prueba[ind_seq-1]-1,
+                         lista_nodos_prueba[ind_seq]-1]
+        res= np.where(W_1 == W_1_max) 
+        pos_id_max = []
+        for p in res:
+             pos_id_max.append(p[0])
+        print(pos_id_max)
+        c=input('Pos_max') 
+        pos_id_max_tuple = tuple(pos_id_max)              
+        W_1.itemset(pos_id_max_tuple, 0.0)
+        #Find the second maximun value
+        W_1_max2=np.max(W_1)
+        res= np.where(W_1 == W_1_max2) 
+        pos_id_max2 = []
+        for p in res:
+             pos_id_max2.append(p[0])
+        pos_id_max2_tuple = tuple(pos_id_max2) 
+        file_W1.write('%d: (%d,%d):%0.4f (%d,%d):%0.4f (%d,%d):%0.4f\n'%(ind_seq,lista_nodos_prueba[ind_seq-1],lista_nodos_prueba[ind_seq],W_1_pos_real,
+                                                                         pos_id_max_tuple[0]+1,pos_id_max_tuple[1]+1,W_1_max,
+                                                                         pos_id_max2_tuple[0]+1,pos_id_max2_tuple[1]+1,W_1_max2)) 
+        ###################################################################################################################################################  
+        ####################################### Matrix W12 #################################################################################################       
+        if (ind_seq)>=2:                                        
+            W_12_max=np.max(W_12)
+            W_12_pos_real=W_12[lista_nodos_prueba[ind_seq-2]-1,
+		               lista_nodos_prueba[ind_seq-1]-1,                              
+		               lista_nodos_prueba[ind_seq]-1]
+                                                       
+            res= np.where(W_12 == W_12_max)
+            pos_id_max = []
+            for p in res:
+                pos_id_max.append(p[0])
+            
+            pos_id_max_tuple = tuple(pos_id_max)
+            W_12.itemset(pos_id_max_tuple, 0.0)
+            #Find the second maximun value
+            W_12_max2=np.max(W_12)
+            res= np.where(W_12 == W_12_max2)
+            pos_id_max2 = []
+            for p in res:
+                pos_id_max2.append(p[0])
+            pos_id_max2_tuple = tuple(pos_id_max2)                                
+        
+            file_W12.write('%d: (%d,%d,%d):%0.4f (%d,%d,%d):%0.4f (%d,%d,%d):%0.4f\n'%(ind_seq,lista_nodos_prueba[ind_seq-2],lista_nodos_prueba[ind_seq-1],
+		                                                                               lista_nodos_prueba[ind_seq],W_12_pos_real,
+		                                                                               pos_id_max_tuple[0]+1,pos_id_max_tuple[1]+1,
+		                                                                               pos_id_max_tuple[2]+1,W_12_max,
+		                                                                               pos_id_max2_tuple[0]+1,pos_id_max2_tuple[1]+1,
+		                                                                               pos_id_max2_tuple[2]+1,W_12_max2)) 
+		
+        '''    
+        elif (ind_seq)==3:
+            W_12 = np.multiply(self.W_1[:, :, np.newaxis], self.W_2[np.newaxis, :]) 
+            file_W12.write('%d: %0.4f %0.4f\n'%(ind_seq,np.max(W_12),W_12[lista_nodos_prueba[ind_seq-2]-1,
+                                                                          lista_nodos_prueba[ind_seq-1]-1,
+                                                                          lista_nodos_prueba[ind_seq]-1]))  
+         '''    
+        ####################################### Matrix W3###############################################################################################
+        if (ind_seq)>=3:
+            W_123_max=np.max(W_123)
+            W_123_pos_real=W_123[0,lista_nodos_prueba[ind_seq-3]-1,
+		                   lista_nodos_prueba[ind_seq-2]-1,                              
+		                   lista_nodos_prueba[ind_seq-1]-1,     
+		                   lista_nodos_prueba[ind_seq]-1]
+		                       
+		                                                                         
+            res= np.where(W_123 == W_123_max)
+            print(res)
+            pos_id_max = []
+            for p in res:
+                pos_id_max.append(p[0])
+            print(pos_id_max)
+            c =input('Pos_max_W123')
+            pos_id_max_tuple = tuple(pos_id_max)
+            W_123.itemset(pos_id_max_tuple, 0.0)
+            #Find the second maximun value
+            W_123_max2=np.max(W_123)
+            res= np.where(W_123 == W_123_max2)
+            pos_id_max2 = []
+            for p in res:
+                pos_id_max2.append(p[0])
+            pos_id_max2_tuple = tuple(pos_id_max2)
+            file_W123.write('%d: (%d,%d,%d,%d):%0.4f (%d,%d,%d,%d):%0.4f (%d,%d,%d,%d):%0.4f\n'%(ind_seq,lista_nodos_prueba[ind_seq-3],lista_nodos_prueba[ind_seq-2],
+		                                                                               lista_nodos_prueba[ind_seq-1],lista_nodos_prueba[ind_seq],W_123_pos_real,
+		                                                                               pos_id_max_tuple[1]+1,pos_id_max_tuple[2]+1,
+		                                                                               pos_id_max_tuple[3]+1,pos_id_max_tuple[4]+1,W_123_max,
+		                                                                               pos_id_max2_tuple[1]+1,pos_id_max2_tuple[2]+1,
+		                                                                               pos_id_max2_tuple[3]+1,pos_id_max2_tuple[4]+1,W_123_max2)) 
+		
+        
+       
+            
+        ###################################################################################################################################################  
+        
+        file_W1.close()
+        file_W12.close()                                                                              
+        file_W123.close()
+        '''
+        # Create a deepcopy
+        W_1 = copy.deepcopy(self.W_1)
+        max_W1=np.max(W_1)
+        res = np.where(W_1 == max_W1)
+        pos_id_max = []
+        for p in res:
+             pos_id_max.append(p[0])
+            
+        file_W1.write('%d: %0.4f\n'%(ind_seq,max_W1)) 
+        '''
+        '''
+        if (ind_seq+1)==1:
+            
+        elif (ind_seq+1)==2:
+             W_1 = copy.deepcopy(self.W_1)
+             W_12 = copy.deepcopy(self.W_12)
+        elif (ind_seq+1)>=3:
+             W_1 = copy.deepcopy(self.W_1)
+             W_12 = copy.deepcopy(self.W_12)
+             W_123 = copy.deepcopy(self.W_123)
+        
+        
+        '''
+        '''
+        for n in range(num_values):
+            res = np.where(matrix_aux == np.max(matrix_aux))
+            pos_id_max = []
+            
+            for p in res:
+                pos_id_max.append(p[0])
+            
+            camino_mas_probable.append(pos_id_max)
 
+            sec = ""
+            for q in range(len(pos_id_max)):
+                if q != (len(pos_id_max) - 1):
+                    sec += "%d => " % (pos_id_max[q] + 1)
+                else:
+                    sec += "%d " % (pos_id_max[q] + 1)
+            
+            
+            print("\n\nEl recorrido más probable es:")
+            if (n==0): # Para el primer maximo
+                self.SEC_COMPLETO=self.SEC_COMPLETO+ "\n" +sec
+                print(self.SEC_COMPLETO)
+                ####################
+                ####################
+                with open('Res.txt', 'a') as f:
+                    f.write(sec)
+                    f.write(' ')
+                    f.write(str(np.max(matrix_aux)))
+                    f.write(' ')
+                    #f.write('\n')
+                    f.close()
+
+                ####################
+                ####################
+
+            #print(sec)
+
+
+                ####################
+                ####################
+            if (n==1):# Para el segundo maximo
+                with open('Res.txt', 'a') as f:
+                    f.write(str(np.max(matrix_aux)))
+                    f.write('\n')
+                    f.close()
+
+                ####################
+                ####################
+            print(sec)
+
+            print("Con un peso de W = %.4f" % np.max(matrix_aux))
+            pos_id_max = tuple(pos_id_max)
+            matrix_aux.itemset(pos_id_max, 0.0)
+
+        return camino_mas_probable
+        '''
     ####################################################################################################################
     # FUNCTION FOR EVAL THE LOCATION USING THE INFORMATION FROM 'n'-EDGES
     ####################################################################################################################
 
     def evaluate_location(self, Num_Edges_Eval, Nodes_Annotated, Edges_Annotated, Nodes_Detect, Objects_Detect, Ang_g,
-                          path2save, lista_nodos_prueba):
+                          path2save, lista_nodos_prueba, ind_seq):
         # Create a deepcopy for variable Edges_Annotated
         Copy_Edges_Annotated = copy.deepcopy(Edges_Annotated)
         # FIRST: Evaluate the weight from each Edge for actual detection
@@ -574,7 +825,8 @@ class EstimationWeights:
                                  Objects_Detect,
                                  Num_Edges_Eval,
                                  Ang_g)
-
+        
+        #represent_data_matrix_v2("W_1",self.W_1,path2save, it):
         # HAGO UNA COPIA DE LAS MATRICES RESULTADOS Y LAS ALMACENO EN UNA LISTA
         self.save_discrete_data_from_W()
         # OJO: TIEMPO 2
@@ -588,11 +840,13 @@ class EstimationWeights:
             # Most relevant values for W_1
             print("\n\n\nMAX VALUES FOR MATRIX W_1")
             caminos_probables = self.max_values_from_matrix(3, self.W_1)
-#            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
+            
+            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
             t1_t2 = t2 - t1
             print("\nTiempo de ejecución de la matriz W1: %f" % t1_t2)
+            c=input('Pulse1')
             # Save data matrix
-#            self.represent_data_matrix("W_1", self.W_1, 0.4, path2save)
+            self.represent_data_matrix("W_1", self.W_1, 0.4, path2save)
             # Comprobar si la secuencia de lista pruebas tiene solo un edge a evaluar (2 nodos)
             if len(lista_nodos_prueba) == 2:
                 if lista_nodos_prueba == [y+1 for y in caminos_probables[0]]:
@@ -600,7 +854,7 @@ class EstimationWeights:
                                      caminos_probables[0][1]]
                     W_max_2 = self.W_1[caminos_probables[1][0],
                                        caminos_probables[1][1]]
-
+                    
                     Value_Ponderado = round(W_max / W_max_2, 3)
                     self.sumA += Value_Ponderado
                     self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " C ", Value_Ponderado)
@@ -625,23 +879,25 @@ class EstimationWeights:
             """
 
             self.W_12 = np.multiply(self.W_1[:, :, np.newaxis], W[np.newaxis, :])
+            
 
             # OJO TIEMPO 6: Tiempo de ejecucion para la matriz W12
             t6 = time.time()
             # Save the max values sequences for matrix W12
-#            self.represent_data_matrix("W_12", self.W_12, 0.1, path2save)
+            self.represent_data_matrix("W_12", self.W_12, 0.1, path2save)
 
             # Most relevant values for W_12
             print("\n\n\nMAX VALUES FOR MATRIX W_12")
             caminos_probables = self.max_values_from_matrix(3, self.W_12)
-#            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
+            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
             print("\n\nTIEMPOS DE EJECUCIÓN DEL PROGRAMA")
             t6_t2 = t6 - t2
             print("\nTiempo de ejecución de la matriz W12: %f" % t6_t2)
+            c=input('Pulse1')
             # Save the matrix for second Edge
             self.W_2 = copy.deepcopy(W)
             # Save data matrix
-#            self.represent_data_matrix("W_2", self.W_2, 0.4, path2save)
+            self.represent_data_matrix("W_2", self.W_2, 0.4, path2save)
             # Comprobar si la secuencia de lista pruebas tiene dos edge a evaluar (3 nodos)
             if len(lista_nodos_prueba) == 3:
                 if lista_nodos_prueba == [y+1 for y in caminos_probables[0]]:
@@ -682,14 +938,16 @@ class EstimationWeights:
             t7 = time.time()
             t7_t6 = t7 - t2
             # Save the max values sequences for matrix W123
-#            self.represent_data_matrix("W_123", self.W_123[0], 0.1, path2save)
+            self.represent_data_matrix("W_123", self.W_123[0], 0.1, path2save)
             # OJO: TIEMPO 8
             t8 = time.time()
             t8_t7 = t8 - t7
 
             # Save the matrix for third Edge
             self.W_3 = copy.deepcopy(W)
-#            self.represent_data_matrix("W_3", self.W_3, 0.4, path2save)
+            self.represent_data_matrix("W_3", self.W_3, 0.4, path2save)
+            
+            #self.W_12 = np.multiply(self.W_2[:, :, np.newaxis], W[np.newaxis, :])
 
             # Most relevant values for W_123
             print("\n\n\nMAX VALUES FOR MATRIX W_123")
@@ -704,7 +962,7 @@ class EstimationWeights:
             position = np.where(self.W_123 == np.max(self.W_123))
             camino_max_value = [position[0][0], position[1][0], position[2][0], position[3][0]]
             """
-#            self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
+            #self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
             # Finalmente despues de evaluar tres edges consecutivos se reinicia la variable list_data_representation
             self.restart_list_data_representation()
             # Comprobar si la secuencia de lista pruebas tiene tres edge a evaluar (4 nodos)
@@ -738,16 +996,107 @@ class EstimationWeights:
 
                     Value_Ponderado = round(W_max / W_max_2, 3)
                     self.sumB += (Value_Ponderado - 1)
-                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " I ", Value_Ponderado,
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " I ", Value_Ponderado,                
                                                            lista_nodos_prueba)
+                                            
             ############################################################################################################
             print("\n\nTIEMPOS DE EJECUCIÓN DEL PROGRAMA")
             print("\nTiempo de ejecución de la matriz W123: %f" % t7_t6)
             print("\nTiempo de busqueda de maximos en W123: %f" % t8_t7)
+            c=input('Pulse1')
+        elif Num_Edges_Eval == 4:
+            """
+            for n in range(self.W_12.shape[0]):
+                for m in range(self.W_12.shape[1]):
+                    for o in range(self.W_12.shape[2]):
+                        self.W_123[n][m][o][:] = self.W_12[n][m][o] * W[o][:]
+            """
+
+            self.W_1234 = np.multiply(self.W_123[0, :, :, :, :, np.newaxis],
+                                      W[np.newaxis, np.newaxis, np.newaxis, np.newaxis, :])
+            
+            # OJO: TIEMPO 7
+            t8 = time.time()
+            t8_t6 = t8 - t2
+            # Save the max values sequences for matrix W123
+            #self.represent_data_matrix("W_123", self.W_123[0], 0.1, path2save)
+            # OJO: TIEMPO 8
+            #t8 = time.time()
+            #t8_t7 = t8 - t7
+
+            # Save the matrix for third Edge
+            self.W_4 = copy.deepcopy(W)
+            #self.represent_data_matrix("W_3", self.W_3, 0.4, path2save)
+            
+            #self.W_12 = np.multiply(self.W_2[:, :, np.newaxis], W[np.newaxis, :])
+
+            # Most relevant values for W_123
+            print("\n\n\nMAX VALUES FOR MATRIX W_1234")
+            caminos_probables = self.max_values_from_matrix(3, self.W_1234[0])
+            t9 = time.time()
+            t9_t8 = t9 - t8
+            ############################################################################################################
+            # Valores discretizados a imprimir
+            """
+            camino_real = []
+            for w in range(4):
+                camino_real.append(int(input("Nodo %d: " % (w+1))))
+
+            position = np.where(self.W_123 == np.max(self.W_123))
+            camino_max_value = [position[0][0], position[1][0], position[2][0], position[3][0]]
+            """
+            #self.represent_data_discreted(caminos_probables[0], self.copia_list_data_representation(), path2save)
+            # Finalmente despues de evaluar tres edges consecutivos se reinicia la variable list_data_representation
+            self.restart_list_data_representation()
+            # Comprobar si la secuencia de lista pruebas tiene tres edge a evaluar (4 nodos)
+            if len(lista_nodos_prueba) == 5:
+                if lista_nodos_prueba == [y+1 for y in caminos_probables[0]]:
+                    W_max = self.W_1234[0,
+                                       caminos_probables[0][0],
+                                       caminos_probables[0][1],
+                                       caminos_probables[0][2],
+                                       caminos_probables[0][3],
+                                       caminos_probables[0][4]]
+                    W_max_2 = self.W_1234[0,
+                                         caminos_probables[1][0],
+                                         caminos_probables[1][1],
+                                         caminos_probables[1][2],
+                                         caminos_probables[1][3],
+                                         caminos_probables[0][4]]
+
+                    Value_Ponderado = round(W_max / W_max_2, 3)
+                    self.sumA += Value_Ponderado
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " C ", Value_Ponderado)
+                else:
+                    W_max = self.W_1234[0,
+                                       caminos_probables[0][0],
+                                       caminos_probables[0][1],
+                                       caminos_probables[0][2],
+                                       caminos_probables[0][3],
+                                       caminos_probables[0][3]]
+                    W_max_2 = self.W_1234[0,
+                                         lista_nodos_prueba[0]-1,
+                                         lista_nodos_prueba[1]-1,
+                                         lista_nodos_prueba[2]-1,
+                                         lista_nodos_prueba[3]-1,
+                                         lista_nodos_prueba[4]-1]
+
+                    Value_Ponderado = round(W_max / W_max_2, 3)
+                    self.sumB += (Value_Ponderado - 1)
+                    self.resultados_de_la_lista_de_pruebas(caminos_probables[0], " I ", Value_Ponderado,                
+                                                           lista_nodos_prueba)
+                                            
+            ############################################################################################################
+            print("\n\nTIEMPOS DE EJECUCIÓN DEL PROGRAMA")
+            print("\nTiempo de ejecución de la matriz W1234: %f" % t8_t6)
+            print("\nTiempo de busqueda de maximos en W1234: %f" % t9_t8)
+            c=input('Pulse1')
 
         # Determinacion del tiempo medio de ejecucion de nodos y objetos
         print("\n\nTiempo de ejecución de los nodos: %f" % median(self.time_nodes_list))
         print("\nTiempo de ejecución de los objetos: %f" % median(self.time_objects_list))
+        
+        self.results_matrix(self, ind_seq,path2save,lista_nodos_prueba)
 
     ####################################################################################################################
     # FUNCTION FOR DETERMINE THE CORRELATION BETWEEN OBJECTS
@@ -882,22 +1231,27 @@ class EstimationWeights:
         for n in range(num_values):
             res = np.where(matrix_aux == np.max(matrix_aux))
             pos_id_max = []
+            
             for p in res:
                 pos_id_max.append(p[0])
-
+            
             camino_mas_probable.append(pos_id_max)
 
             sec = ""
+            
             for q in range(len(pos_id_max)):
                 if q != (len(pos_id_max) - 1):
                     sec += "%d => " % (pos_id_max[q] + 1)
                 else:
                     sec += "%d " % (pos_id_max[q] + 1)
-
+            
+            
             print("\n\nEl recorrido más probable es:")
             if (n==0): # Para el primer maximo
                 self.SEC_COMPLETO=self.SEC_COMPLETO+ "\n" +sec
+                print('SEC_COMPLETO:')
                 print(self.SEC_COMPLETO)
+                print('\n')
                 ####################
                 ####################
                 with open('Res.txt', 'a') as f:
@@ -911,7 +1265,7 @@ class EstimationWeights:
                 ####################
                 ####################
 
-            print(sec)
+            #print(sec)
 
 
                 ####################
@@ -924,14 +1278,15 @@ class EstimationWeights:
 
                 ####################
                 ####################
-            print(sec)
+            
+            print("n:%d: %s"%(n,sec))
 
             print("Con un peso de W = %.4f" % np.max(matrix_aux))
             pos_id_max = tuple(pos_id_max)
             matrix_aux.itemset(pos_id_max, 0.0)
 
         return camino_mas_probable
-
+   
     ##################################################################
     # FUNCTION FOR CREATE THE .txt WITH RESULTS OF LIST TEST SEQUENCES
     ##################################################################

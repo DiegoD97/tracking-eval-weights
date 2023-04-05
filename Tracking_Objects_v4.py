@@ -711,18 +711,18 @@ class Detection:
                 fid_file_prediction = open(file_prediction, 'w')
                 fid_file_prediction.close()
             # Para Linux
-            os.system("./Resources/libsvm-3.25/svm-predict %s %s %s" % (file_vector, file_model, file_prediction))
+            # os.system("./Resources/libsvm-3.25/svm-predict %s %s %s" % (file_vector, file_model, file_prediction))
             # Para windows
             # path_svm = os.path.join("C:/Users/die_d/repositorios/tracking-eval-weights/Resources/libsvm-3.25/")
             # os.system(path_svm + "svm-predict %s %s %s" % (file_vector, file_model, file_prediction))
 
-            nodes = ["NoNode", "EndNode", "NodeT", "CrossNode", "NodeL", "OpenNode"]
+            #nodes = ["NoNode", "EndNode", "NodeT", "CrossNode", "NodeL", "OpenNode"]
 
-            with open(file_prediction) as fid1:
-                line = fid1.readline()
-                label = int(line[0])
-                print(label),print(nodes[label])
-                print("node_classification:%s\n" % nodes[label])
+            #with open(file_prediction) as fid1:
+            #    line = fid1.readline()
+            #    label = int(line[0])
+            #    print(label),print(nodes[label])
+            #    print("node_classification:%s\n" % nodes[label])
 
             os.remove(file_vector)
             os.remove(file_prediction)

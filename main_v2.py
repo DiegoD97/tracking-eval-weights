@@ -32,16 +32,21 @@ if sys.argv[1] != "-annotation":
         # Split the data with white space
         aux_list = row.split("\n")[0].split(" ")
 
-        for cont in range(0,len(aux_list)-1,4):
-            # Reset the variables
-            sequence_aux = []
-            list_nodos_aux = []
-            dict_aux = {}
+        # Reset the variables
+        sequence_aux = []
+        list_nodos_aux = []
+        dict_aux = {}
+
+        for cont in range(0, len(aux_list)-1, 4):
             # Extract the nodes
             nodes_res_split = aux_list[cont].split("N")
             print("Nodo ini " + nodes_res_split[1])
             print("Nodo dest" + nodes_res_split[2])
-            list_nodos_aux = [int(nodes_res_split[1]), int(nodes_res_split[2])]
+            if cont == 0:
+                list_nodos_aux.append(int(nodes_res_split[1]))
+                list_nodos_aux.append(int(nodes_res_split[2]))
+            else:
+                list_nodos_aux.append(int(nodes_res_split[2]))
 
             # Create the dictionary with data nodes class
             dict_aux = {
@@ -52,8 +57,9 @@ if sys.argv[1] != "-annotation":
         
             sequence_aux.append([aux_list[cont], float(aux_list[cont + 1]), dict_aux])
            
-            lista_nodos_pruebas.append(list_nodos_aux)
-            lista_pruebas.append(sequence_aux)
+        lista_nodos_pruebas.append(list_nodos_aux)
+        lista_pruebas.append(sequence_aux)
+    """
     # Eliminación del contenido de DiscretResults
 
     for files_dir in os.listdir(os.path.join("Results", "DiscretResults")):
@@ -85,7 +91,7 @@ if sys.argv[1] != "-annotation":
         os.mkdir(os.path.join("Results", "ResultsWeights", file_dir))
         # Incrementar el id_index
         id_index = id_index + 1
-
+    """
 
 
     """
@@ -121,38 +127,43 @@ if sys.argv[1] != "-annotation":
 ########################################################################################################################
 # ELIMINACIÓN DE LOS FICHEROS DE RESULTADOS CREADOS PREVIOS A LA EJECUCIÓN DEL PROGRAMA
 ########################################################################################################################
-elif (sys.argv[1] == "-annotation"):
-    # Eliminación del contenido de DiscretResults
 
-    for files_dir in os.listdir(os.path.join("Results", "DiscretResults")):
-        shutil.rmtree(os.path.join("Results", "DiscretResults", files_dir))
+# Eliminación del contenido de DiscretResults
 
-    # Eliminación del contenido de ResultsTracking
-    for files_dir in os.listdir(os.path.join("Results", "ResultsTracking")):
-        shutil.rmtree(os.path.join("Results", "ResultsTracking", files_dir))
+for files_dir in os.listdir(os.path.join("Results", "DiscretResults")):
+    shutil.rmtree(os.path.join("Results", "DiscretResults", files_dir))
 
-    # Eliminación del contenido de la carpeta ResultsWeights
-    for files_dir in os.listdir(os.path.join("Results", "ResultsWeights")):
-        shutil.rmtree(os.path.join("Results", "ResultsWeights", files_dir))
+# Eliminación del contenido de ResultsTracking
+for files_dir in os.listdir(os.path.join("Results", "ResultsTracking")):
+    shutil.rmtree(os.path.join("Results", "ResultsTracking", files_dir))
 
-    # Re-open the file pruebas
-    file_pruebas = open(os.path.join("Resources", "lista_pruebas.txt"))
-    # Creacion de las nuevas subcarpetas
-    id_index = 0
-    for __ in file_pruebas:
-        file_dir = "Prueba_%d" % (id_index + 1)
-        file_dir11 = "Prueba_%d" % (id_index + 1) +"/Tracking"
+# Eliminación del contenido de la carpeta ResultsWeights
+for files_dir in os.listdir(os.path.join("Results", "ResultsWeights")):
+    shutil.rmtree(os.path.join("Results", "ResultsWeights", files_dir))
 
-        # Creacion de las subcarpetas en DiscretResults
-        os.mkdir(os.path.join("Results", "DiscretResults", file_dir))
-        # Creacion de las subcarpetas en ResultsTracking
-        os.mkdir(os.path.join("Results", "ResultsTracking", file_dir))
-        os.mkdir(os.path.join("Results", "ResultsTracking", file_dir11))
+# Eliminación del contenido de la carpeta ResultsWeights2
+if os.path.exists(os.path.join("Results", "ResultsWeights2")):
+    for files_dir in os.listdir(os.path.join("Results", "ResultsWeights2")):
+        shutil.rmtree(os.path.join("Results", "ResultsWeights2", files_dir))
+else:
+    os.mkdir(os.path.join("Results", "ResultsWeights2"))
 
-        # Creacion de las subcarpetas en ResultsWeights
-        os.mkdir(os.path.join("Results", "ResultsWeights", file_dir))
-        # Incrementar el id_index
-        id_index = id_index + 1
+# Re-open the file pruebas
+file_pruebas = open(os.path.join("Resources", "lista_pruebas.txt"))
+# Creacion de las nuevas subcarpetas
+id_index = 0
+for __ in lista_pruebas:
+    file_dir = "Prueba_%d" % (id_index + 1)
+    # Creacion de las subcarpetas en DiscretResults
+    os.mkdir(os.path.join("Results", "DiscretResults", file_dir))
+    # Creacion de las subcarpetas en ResultsTracking
+    os.mkdir(os.path.join("Results", "ResultsTracking", file_dir))
+    # Creacion de las subcarpetas en ResultsWeights
+    os.mkdir(os.path.join("Results", "ResultsWeights", file_dir))
+    # Creacion de las subcarpetas en ResultsWeights2
+    os.mkdir(os.path.join("Results", "ResultsWeights2", file_dir))
+    # Incrementar el id_index
+    id_index = id_index + 1
 
 
 def main():
@@ -227,17 +238,16 @@ def main():
         # PARTE DE LA 'DETECTION'
         ################################################################################################################
         # Tracking and Evaluating for three sequences
-        print("AAAA")
-        print (lista_pruebas)
+
         for value_list, value_nodes_list, id_sequence in zip(lista_pruebas,
                                                              lista_nodos_pruebas,
-                                                             range(len(lista_nodos_pruebas))):
+                                                             range(len(lista_pruebas))):
             # Reinicio la variable list_data_representation de la clase EW
             EW.restart_list_data_representation()
             directory2save = "Prueba_%d" % (id_sequence + 1)
             for sequence, id_seq in zip(value_list, range(len(value_list))):
                 if (id_seq+1) == 1:
-                    print("ZZZZZZ")
+
                     print(sequence)
                     
                     distance_between_nodes = DET.tracking_sequence(sequence[0], path2save=directory2save,
@@ -268,7 +278,8 @@ def main():
                                          object_detections,
                                          sequence[1],
                                          path2save=directory2save,
-                                         lista_nodos_prueba=value_nodes_list)
+                                         lista_nodos_prueba=value_nodes_list,
+                                         ind_seq=id_seq)
 
                     if id_sequence == len(lista_nodos_pruebas) - 1:
                         res_pond = round(EW.sumA - EW.sumB, 3)
@@ -294,7 +305,8 @@ def main():
                                          object_detections,
                                          sequence[1],
                                          path2save=directory2save,
-                                         lista_nodos_prueba=value_nodes_list)
+                                         lista_nodos_prueba=value_nodes_list,
+                                         ind_seq=id_seq)
 
                     if id_sequence == len(lista_nodos_pruebas) - 1:
                         res_pond = round(EW.sumA - EW.sumB, 3)
@@ -320,14 +332,42 @@ def main():
                                          object_detections,
                                          sequence[1],
                                          path2save=directory2save,
-                                         lista_nodos_prueba=value_nodes_list)
+                                         lista_nodos_prueba=value_nodes_list,
+                                         ind_seq=id_seq)
 
                     if id_sequence == len(lista_nodos_pruebas) - 1:
                         res_pond = round(EW.sumA - EW.sumB, 3)
                         msg2print = "\nPve = Sum(A) - Sum(B - 1)\n" + "Pve = " + str(res_pond)
                         EW.lista_pruebas_txt.write(msg2print)
 
-                if (id_seq + 1) > 3:
+                elif (id_seq + 1) == 4:
+                    print(sequence)
+                    distance_between_nodes = DET.tracking_sequence(sequence[0], path2save=directory2save)
+                    sequence[2]['dist'] = distance_between_nodes
+                    # Reestart some variable for next iteration
+                    DET.list_results = []
+                    DET.list_YOLO_Camera_results = []
+                    # Object Detection Sequence
+                    # object_detections = MT.data_filter_objects(sequence[0]+"_Results.txt")
+                    object_detections = DET.final_results_clustering
+                    node_detection = sequence[2]
+                    # Eval the weight
+                    EW.evaluate_location(4,
+                                         MAP.NODE_AN.LIST_NODES,
+                                         MAP.NODE_AN.LIST_NODES_EDGES,
+                                         node_detection,
+                                         object_detections,
+                                         sequence[1],
+                                         path2save=directory2save,
+                                         lista_nodos_prueba=value_nodes_list,
+                                         ind_seq=id_seq)
+
+                    if id_sequence == len(lista_nodos_pruebas) - 1:
+                        res_pond = round(EW.sumA - EW.sumB, 3)
+                        msg2print = "\nPve = Sum(A) - Sum(B - 1)\n" + "Pve = " + str(res_pond)
+                        EW.lista_pruebas_txt.write(msg2print)
+
+                elif (id_seq + 1) > 4:
                     # In case to explore more than 3 edges
                     # Now the matrix_W1 will be the matrix_W2 from before iteration and the matrix W2 will be the
                     # matrix W3 from before iteration
@@ -357,12 +397,16 @@ def main():
                                          object_detections,
                                          sequence[1],
                                          path2save=directory2save,
-                                         lista_nodos_prueba=value_nodes_list)
+                                         lista_nodos_prueba=value_nodes_list,
+                                         ind_seq=id_seq)
 
                     if id_sequence == len(lista_nodos_pruebas) - 1:
                         res_pond = round(EW.sumA - EW.sumB, 3)
                         msg2print = "\nPve = Sum(A) - Sum(B - 1)\n" + "Pve = " + str(res_pond)
                         EW.lista_pruebas_txt.write(msg2print)
+
+                ########################################################################################################
+                ########################################################################################################
 
         ################################################################################################################
         ################################################################################################################
